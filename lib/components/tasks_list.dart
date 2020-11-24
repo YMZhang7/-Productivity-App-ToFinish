@@ -17,9 +17,20 @@ class TasksList extends StatelessWidget {
 
   List<Widget> getTiles(List<Task> tasks){
     List<Widget> tiles = [];
+    tiles.add(
+      Container(
+        height: 50.0,
+        decoration: BoxDecoration(
+          color: Colors.amber.withOpacity(.3),
+          borderRadius: BorderRadius.all(Radius.circular(10.0))
+        ),
+        child: Center(child: Text('To-Do List', style: TextStyle(fontSize: 20.0),),),
+      )
+    );
+    tiles.add(Divider(height: 5.0,));
     for (int i = 0; i < tasks.length; i++){
       tiles.add(TaskTile(task: tasks[i]));
-      tiles.add(Divider(height: 1.0,));
+      tiles.add(Divider(height: 5.0,));
     }
     return tiles;
   }

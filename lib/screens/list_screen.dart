@@ -39,6 +39,7 @@ class ListScreen extends StatelessWidget {
             );
           } else if (state is TasksLoadSuccess){
             return Container(
+              padding: EdgeInsets.all(10.0),
               child: Column(
                 children: getTaskTiles(state.tasks),
               )
@@ -71,6 +72,7 @@ class ListScreen extends StatelessWidget {
     } else {
       for (int i = 0; i < tasks.length; i++){
         tiles.add(TaskTile(task: tasks[i],));
+        tiles.add(Divider(height: 5.0,));
       }
     }
     return tiles;

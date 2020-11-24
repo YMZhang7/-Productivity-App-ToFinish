@@ -23,6 +23,7 @@ class TimersListScreen extends StatelessWidget {
       ),
       body: Stack(
           children:[
+            // timers
             BlocBuilder<TodoBloc, TodoState>(
               builder: (context, state) {
                 if (state is TasksLoadSuccess){
@@ -40,6 +41,7 @@ class TimersListScreen extends StatelessWidget {
                 }
               },
             ),
+            // bottom sheet
             Container(
               child: DraggableScrollableSheet(
                 initialChildSize: 0.4,
@@ -48,8 +50,9 @@ class TimersListScreen extends StatelessWidget {
                 builder: (context, scrollController){
                   return Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.colour2,
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(40.0), topRight: Radius.circular(40.0)),
+                      // color: Theme.of(context).colorScheme.colour2,
+                      color: Colors.transparent,
+                      // borderRadius: BorderRadius.only(topLeft: Radius.circular(40.0), topRight: Radius.circular(40.0)),
                     ),
                     child: BlocBuilder<TodoBloc, TodoState>(
                       builder: (context, state) {
@@ -58,8 +61,11 @@ class TimersListScreen extends StatelessWidget {
                           return Center(child: CircularProgressIndicator(),);
                         } else if (state is TasksLoadSuccess){
                           return Padding(
-                            padding: const EdgeInsets.only(top: 40.0, left: 20.0, right: 20.0),
-                            child: TasksList(controller: scrollController, tasks: state.tasks)
+                            padding: const EdgeInsets.only(top: 0.0, left: 20.0, right: 20.0),
+                            child: Container(
+                              color: Colors.white,
+                              child: TasksList(controller: scrollController, tasks: state.tasks)
+                            ),
                           );
                         } else if (state is TasksLoadFailure){
                           return Center(child: Text('Something went wrong...'),);
