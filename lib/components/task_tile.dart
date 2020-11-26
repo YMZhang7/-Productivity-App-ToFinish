@@ -2,6 +2,7 @@ import 'package:ToFinish/blocs/blocs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/Task.dart';
+import '../custom_colour_scheme.dart';
 
 class TaskTile extends StatefulWidget {
   final Task task;
@@ -25,8 +26,18 @@ class _TaskTileState extends State<TaskTile> {
           child: Container(
             height: 50.0,
             decoration: BoxDecoration(
-              color: Colors.lightGreen.withOpacity(.3),
-              borderRadius: BorderRadius.all(Radius.circular(10.0))
+              // color: Colors.lightGreen,
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(10.0)),
+              boxShadow: [BoxShadow(
+                color: Colors.grey.withOpacity(.5),
+                blurRadius: 10.0,
+                spreadRadius: 0.0,
+                offset: Offset(
+                  1.0, // Move to right 10  horizontally
+                  1.0, // Move to bottom 10 Vertically
+                ),
+              )],
             ),
             child: CheckboxListTile(
               value: widget.task.isCompleted, // controls whether the box is checked

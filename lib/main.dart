@@ -38,7 +38,12 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AllScreens extends StatelessWidget {
+class AllScreens extends StatefulWidget {
+  @override
+  _AllScreensState createState() => _AllScreensState();
+}
+
+class _AllScreensState extends State<AllScreens> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ScreensBloc, ScreensState>(

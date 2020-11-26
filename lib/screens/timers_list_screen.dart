@@ -46,7 +46,7 @@ class TimersListScreen extends StatelessWidget {
               child: DraggableScrollableSheet(
                 initialChildSize: 0.4,
                 minChildSize: 0.2,
-                maxChildSize: 0.6,
+                maxChildSize: 0.5,
                 builder: (context, scrollController){
                   return Container(
                     decoration: BoxDecoration(
@@ -62,10 +62,7 @@ class TimersListScreen extends StatelessWidget {
                         } else if (state is TasksLoadSuccess){
                           return Padding(
                             padding: const EdgeInsets.only(top: 0.0, left: 20.0, right: 20.0),
-                            child: Container(
-                              color: Colors.white,
-                              child: TasksList(controller: scrollController, tasks: state.tasks)
-                            ),
+                            child: TasksList(controller: scrollController, tasks: state.tasks),
                           );
                         } else if (state is TasksLoadFailure){
                           return Center(child: Text('Something went wrong...'),);
