@@ -18,7 +18,7 @@ class _TasksMatrixState extends State<TasksMatrix> with TickerProviderStateMixin
   void initState() {
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 1)
+      duration: Duration(milliseconds: widget.tasks.length * 500)
     );
     _controller.forward();
     super.initState();

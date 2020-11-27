@@ -1,4 +1,3 @@
-import 'package:ToFinish/components/components.dart';
 import 'package:ToFinish/models/Timer.dart';
 import 'package:ToFinish/screens/add_new_task_screen.dart';
 import 'package:flutter/material.dart';
@@ -21,10 +20,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      // home: BlocProvider(
-      //   create: (context) => ScreensBloc(),
-      //   child: AllScreens(),
-      // ),
       home: MultiBlocProvider(
         providers: [
           BlocProvider(

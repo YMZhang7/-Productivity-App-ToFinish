@@ -11,26 +11,28 @@ class AnimationBox extends StatefulWidget {
 }
 
 class _AnimationBoxState extends State<AnimationBox> with TickerProviderStateMixin{
-  Animation<Offset> _offsetAnimation;
+  Animation _animation;
   @override
   void initState() {
     super.initState();
-    _offsetAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 2.0), 
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: widget.controller,
-      curve: Interval(
-        (widget.index-1)/widget.total, widget.index/widget.total,
-        curve: Curves.easeInOutCubic,
-      ),
-    ));
+    _animation = Tween(
+      begin: 0.0, 
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: widget.controller,
+        curve: Interval(
+          (widget.index-1)/widget.total, widget.index/widget.total,
+          curve: Curves.easeOutCirc
+        ),
+      )
+    );
     // widget.controller.forward(); // start the animation
   } 
   @override
   Widget build(BuildContext context) {
-    return SlideTransition(
-      position: _offsetAnimation,
+    return FadeTransition(
+      opacity: _animation,
       child: widget.child
     );
   }
