@@ -21,7 +21,7 @@ class _TasksListState extends State<TasksList> with TickerProviderStateMixin{
     super.initState();
 
     _controller = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: Duration(milliseconds: 400 * widget.tasks.length),
       vsync: this
     );
     _controller.forward();
@@ -67,12 +67,14 @@ class _TasksListState extends State<TasksList> with TickerProviderStateMixin{
       tiles.add(Divider(height: 5.0,));
       for (int i = 0; i < tasks.length; i++){
         tiles.add(AnimationListTile(controller: _controller, child: TaskTile(task: tasks[i]), index: i + 2, total: tasks.length + 1,));
-        tiles.add(Divider(height: 5.0,));
+        // tiles.add(Divider(height: 5.0,));
+        tiles.add(SizedBox(height: 5.0,));
       }
     } else {
       for (int i = 0; i < tasks.length; i++){
         tiles.add(AnimationListTile(controller: _controller, child: TaskTile(task: tasks[i]), index: i + 1, total: tasks.length,));
-        tiles.add(Divider(height: 5.0,));
+        // tiles.add(Divider(height: 5.0,));
+        tiles.add(SizedBox(height: 5.0,));
       }
     }
     return tiles;

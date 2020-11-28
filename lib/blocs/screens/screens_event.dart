@@ -22,3 +22,8 @@ class ForwardButtonPressed extends ScreensEvent {
 class BackButtonPressed extends ScreensEvent {}
 
 class AddButtonPressed extends ScreensEvent {}
+
+class EditTask extends ScreensEvent {
+  Task task;
+  EditTask({@required this.task});
+}

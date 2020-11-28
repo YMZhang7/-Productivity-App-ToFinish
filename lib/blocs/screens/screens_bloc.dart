@@ -28,12 +28,22 @@ class ScreensBloc extends Bloc<ScreensEvent, ScreensState> {
         yield InTimersListScreen();
       } else if (state is InLAddNewTaskScreen){
         yield InListScreen();
+      } else if (state is InTLEditNewTaskScreen){
+        yield InTimersListScreen();
+      } else if (state is InLEditNewTaskScreen){
+        yield InListScreen();
       }
     } else if (event is AddButtonPressed){
       if (state is InTimersListScreen){
         yield InTLAddNewTaskScreen();
       } else if (state is InListScreen){
         yield InLAddNewTaskScreen();
+      }
+    } else if (event is EditTask){
+      if (state is InTimersListScreen){
+        yield InTLEditNewTaskScreen(task: event.task);
+      } else if (state is InListScreen){
+        yield InLEditNewTaskScreen(task: event.task);
       }
     }
   }

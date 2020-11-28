@@ -19,7 +19,11 @@ class _TaskTileState extends State<TaskTile> {
           key: Key(widget.task.id.toString()),
           onDismissed: (direction){
             setState(() {
-              BlocProvider.of<TodoBloc>(context).add(DeleteTask(widget.task));
+              if (direction == DismissDirection.startToEnd){
+                BlocProvider.of<ScreensBloc>(context).add(EditTask(task: widget.task));
+              } else {
+                BlocProvider.of<TodoBloc>(context).add(DeleteTask(widget.task));
+              }
             });
           },
           child: Container(
@@ -50,7 +54,7 @@ class _TaskTileState extends State<TaskTile> {
               controlAffinity: ListTileControlAffinity.leading,
             ),
           ),
-          background: Container(
+          secondaryBackground: Container(
             color: Colors.red,
             child: Align(
               alignment: Alignment.centerRight,
@@ -60,8 +64,17 @@ class _TaskTileState extends State<TaskTile> {
               ),
             ),
           ),
+          background: Container(
+            color: Colors.green,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Icon(Icons.edit, color: Colors.white,),
+              ),
+            ),
+          ),
         ),
-        Divider(height: 1.0,)
       ],
     );
   }

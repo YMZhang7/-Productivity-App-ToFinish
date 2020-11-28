@@ -19,6 +19,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        inputDecorationTheme: InputDecorationTheme(
+          helperStyle: TextStyle(
+            color: Colors.red,
+          ),
+        ),
       ),
       home: MultiBlocProvider(
         providers: [
@@ -59,6 +64,10 @@ class _AllScreensState extends State<AllScreens> {
           return ListScreen();
         } else if (state is InTLAddNewTaskScreen || state is InLAddNewTaskScreen){
           return AddNewTaskScreen();
+        } else if (state is InTLEditNewTaskScreen){
+          return AddNewTaskScreen(currentTask: state.task,);
+        } else if (state is InLEditNewTaskScreen){
+          return AddNewTaskScreen(currentTask: state.task,);
         } else {
           return Container(height: 0.0,width: 0.0,);
         }

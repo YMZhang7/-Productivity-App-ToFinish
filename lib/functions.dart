@@ -1,5 +1,8 @@
 
 String timeConverter(int time){
+  if (time <= 0){
+    return "00 : 00 : 00";
+  }
   String hours = ((time / 3600)).floor().toString();
   if (hours.length == 1){
     hours = "0" + hours;

@@ -11,14 +11,10 @@ class AnimationListTile extends StatefulWidget {
 }
 
 class _AnimationListTileState extends State<AnimationListTile> with TickerProviderStateMixin{
-  // AnimationController _animationController;
   Animation<Offset> _offsetAnimation;
+  Animation<double> _opacityAnimation;
   @override
   void initState() {
-    // _animationController = AnimationController(
-    //   duration: const Duration(seconds: 1),
-    //   vsync: this,
-    // );
     _offsetAnimation = Tween<Offset>(
       begin: const Offset(0.0, 1.0),
       end: Offset.zero,
@@ -29,20 +25,27 @@ class _AnimationListTileState extends State<AnimationListTile> with TickerProvid
         curve: Curves.easeOutCirc, 
       ),
     ));
-    // _animationController.forward();
+    _opacityAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent:widget.controller,
+      curve: Interval(
+        (widget.index-1) / widget.total, widget.index/widget.total,
+        curve: Curves.easeOutCirc, 
+      ),
+    ));
     super.initState();
   }
-  // @override
-  // void dispose() {
-  //   _animationController.dispose();
-  //   super.dispose();
-  // }
 
   @override
   Widget build(BuildContext context) {
     return SlideTransition(
       position: _offsetAnimation,
-      child: widget.child,
+      child: FadeTransition(
+        opacity: _opacityAnimation,
+        child: widget.child
+      ),
     );
   }
 }

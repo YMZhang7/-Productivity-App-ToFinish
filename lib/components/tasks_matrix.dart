@@ -24,6 +24,11 @@ class _TasksMatrixState extends State<TasksMatrix> with TickerProviderStateMixin
     super.initState();
   }
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
     return GridView.count(
       padding: const EdgeInsets.all(20.0),
