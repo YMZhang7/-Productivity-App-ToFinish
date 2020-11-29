@@ -2,7 +2,7 @@ import 'package:ToFinish/blocs/blocs.dart';
 import 'package:ToFinish/models/Task.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
+import 'package:ToFinish/components/components.dart';
 import '../custom_colour_scheme.dart';
 
 class AddNewTaskScreen extends StatefulWidget{
@@ -86,27 +86,29 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
               Text('Hour|Minute|Second', style: TextStyle(fontSize: 20.0),),
               SizedBox(height: 20.0,),
               // Time Picker
-              Container(
-                child: new TimePickerSpinner(
-                  isShowSeconds: true,
-                  normalTextStyle: TextStyle(
-                    fontSize: 24,
-                    color: Colors.grey
-                  ),
-                  highlightedTextStyle: TextStyle(
-                    fontSize: 24,
-                    color: Colors.black
-                  ),
-                  spacing: 50,
-                  itemHeight: 50,
-                  isForce2Digits: true,
-                  onTimeChange: (time) {
-                    setState(() {
-                      timeRequired = time.hour * 3600 + time.minute * 60 + time.second;
-                    });
-                  },
-                )
-              ),
+              TimePicker(onTimeSelectedChange: (value) => timeRequired = value, task: widget.currentTask,),
+              
+              // Container(
+              //   child: new TimePickerSpinner(
+              //     isShowSeconds: true,
+              //     normalTextStyle: TextStyle(
+              //       fontSize: 24,
+              //       color: Colors.grey
+              //     ),
+              //     highlightedTextStyle: TextStyle(
+              //       fontSize: 24,
+              //       color: Colors.black
+              //     ),
+              //     spacing: 50,
+              //     itemHeight: 50,
+              //     isForce2Digits: true,
+              //     onTimeChange: (time) {
+              //       setState(() {
+              //         timeRequired = time.hour * 3600 + time.minute * 60 + time.second;
+              //       });
+              //     },
+              //   )
+              // ),
               SizedBox(height: 30.0,),
               // Add Button
               GestureDetector(
@@ -137,9 +139,14 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                       BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
                     } else {
                       widget.currentTask.description = description;
-                      widget.currentTask.time = timeRequired;
+                      if (timeRequired > widget.currentTask.timeElapsed){
+                        widget.currentTask.time = timeRequired;
+                      } else {
+                        // TODO: if the time set is less than time elapsed
+                      }
                       BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.currentTask));
                       BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
+                      
                     }
                   }
                 },

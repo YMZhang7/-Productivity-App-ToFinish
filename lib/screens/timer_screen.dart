@@ -1,6 +1,7 @@
 import 'package:ToFinish/blocs/blocs.dart';
 import 'package:ToFinish/models/Task.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../functions.dart' as utility;
 import '../custom_colour_scheme.dart';
@@ -12,64 +13,74 @@ class TimerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Colors.white,
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-          children: [
-            // Return button
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: IconButton(
-                    icon: Icon(Icons.arrow_back_ios, color: Colors.black,), 
-                    onPressed: (){
-                      BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
-                    }
+      body: BlocBuilder<TimerBloc, TimerState>(
+        builder: (context, state){
+          if (task.timeElapsed == task.time){
+            BlocProvider.of<TimerBloc>(context).add(CompleteTimer());
+          }
+          return Container(
+            color: Colors.white,
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              children: [
+                // Return button
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10.0),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_back_ios, color: Colors.black,), 
+                        onPressed: (){
+                          BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
+                        }
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.04,),
-            // Task Description
-            Text(task.description, style: TextStyle(fontSize: 20.0),),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.01,),
-            // Task goal
-            Text('Goal: finish within ' + utility.timeConverter(task.time)),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.07,),
-            // Timer
-            BlocBuilder<TimerBloc, TimerState>(
-              builder: (context, state) {
-                task.timeElapsed = task.time - state.duration;
-                BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: task));
-                return createTimer(context, state.duration, task.time);
-              }
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.05,),
-            // Buttons
-            SafeArea(
-              child: BlocBuilder<TimerBloc, TimerState>(
-                builder: (context, state){
-                  if (state is TimerInitial){
-                    return createButtonRow(context, 1);
-                  } else if (state is TimerRunInProgress){
-                    return createButtonRow(context, 2);
-                  } else if (state is TimerRunPause){
-                    return createButtonRow(context, 3);
-                  } else if (state is TimerRunComplete){
-                    return createButtonRow(context, 4);
-                  } else {
-                    return Row();
+                SizedBox(height: MediaQuery.of(context).size.height * 0.04,),
+                // Task Description
+                Text(task.description, style: TextStyle(fontSize: 20.0),),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.01,),
+                // Task goal
+                Text('Goal: finish within ' + utility.timeConverter(task.time)),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.07,),
+                // Timer
+                BlocBuilder<TimerBloc, TimerState>(
+                  builder: (context, state) {
+                    task.timeElapsed = task.time - state.duration;
+                    BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: task));
+                    return createTimer(context, state.duration, task.time);
                   }
-                },
-              ),
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.05,),
+                // Buttons
+                SafeArea(
+                  child: BlocBuilder<TimerBloc, TimerState>(
+                    builder: (context, state){
+                      if (state is TimerInitial){
+                        return createButtonRow(context, 1);
+                      } else if (state is TimerRunInProgress){
+                        return createButtonRow(context, 2);
+                      } else if (state is TimerRunPause){
+                        return createButtonRow(context, 3);
+                      } else if (state is TimerRunComplete){
+                        print('vibrate');
+                        HapticFeedback.mediumImpact();
+                        return createButtonRow(context, 4);
+                      } else {
+                        return Row();
+                      }
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        }
       ),
+      
     );
   }
 

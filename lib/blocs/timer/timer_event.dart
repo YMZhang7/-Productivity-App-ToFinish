@@ -34,3 +34,5 @@ class TimerTicked extends TimerEvent {
   @override
   String toString() => "TimerTicked { duration: $duration }";
 }
+
+class CompleteTimer extends TimerEvent {}

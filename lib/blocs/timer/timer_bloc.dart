@@ -41,6 +41,8 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
       yield* _mapTimerResumedToState(event);
     } else if (event is TimerReset){
       yield* _mapTimerResetToState(event);
+    } else if (event is CompleteTimer){
+      yield TimerRunComplete();
     }
   }
 
