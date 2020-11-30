@@ -5,7 +5,8 @@ import '../models/Task.dart';
 
 class TaskTile extends StatefulWidget {
   final Task task;
-  const TaskTile({@required this.task});
+  final Function(int) toDelete;
+  const TaskTile({@required this.task, @required this.toDelete});
   @override
   _TaskTileState createState() => _TaskTileState();
 }
@@ -22,6 +23,7 @@ class _TaskTileState extends State<TaskTile> {
               if (direction == DismissDirection.startToEnd){
                 BlocProvider.of<ScreensBloc>(context).add(EditTask(task: widget.task));
               } else {
+                widget.toDelete(widget.task.id);
                 BlocProvider.of<TodoBloc>(context).add(DeleteTask(widget.task));
               }
             });
