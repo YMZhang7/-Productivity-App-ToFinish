@@ -2,6 +2,7 @@ import 'package:ToFinish/models/Timer.dart';
 import 'package:ToFinish/screens/add_new_task_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wakelock/wakelock.dart';
 
 import 'blocs/blocs.dart';
 import 'screens/screens.dart';
@@ -14,6 +15,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Wakelock.enable();
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
