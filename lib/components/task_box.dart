@@ -35,11 +35,22 @@ class TaskBox extends StatelessWidget{
           // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Center(child: Text(utility.timeConverter(task.time - task.timeElapsed), style: TextStyle(fontSize: 20.0),)),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Center(child: Text(task.description, style: TextStyle(fontSize: 15.0),)),
-              ],
+            LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {   
+                double widthOfText = constraints.maxWidth * 0.7;  
+                print(widthOfText);
+                return Center(
+                  child: Container(
+                    width: widthOfText,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Center(child: Text(task.description, style: TextStyle(fontSize: 15.0), overflow: TextOverflow.ellipsis,),),
+                      ],
+                    ),
+                  ),
+                );
+              }
             )
           ],
         ),

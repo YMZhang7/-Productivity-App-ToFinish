@@ -1,21 +1,48 @@
 import 'package:ToFinish/blocs/blocs.dart';
 import 'package:ToFinish/models/Task.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../functions.dart' as utility;
 import '../custom_colour_scheme.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-class TimerScreen extends StatelessWidget {
+class TimerScreen extends StatefulWidget {
   final Task task;
   const TimerScreen({@required this.task});
+
+  @override
+  _TimerScreenState createState() => _TimerScreenState();
+}
+
+class _TimerScreenState extends State<TimerScreen> {
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  @override
+  void initState() {
+    super.initState();
+    var initializationSettingsAndroid = AndroidInitializationSettings('flutter_devs');
+    var initializationSettingsIOs = IOSInitializationSettings();
+    var initSettings = InitializationSettings(
+      android: initializationSettingsAndroid, 
+      iOS: initializationSettingsIOs
+    );
+    flutterLocalNotificationsPlugin.initialize(
+      initSettings,
+      onSelectNotification: onSelectNotification
+    );
+  }
+
+  Future onSelectNotification(String payload) async{
+    return TimerScreen(task: widget.task,);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocBuilder<TimerBloc, TimerState>(
         builder: (context, state){
-          if (task.timeElapsed == task.time){
+          if (widget.task.timeElapsed == widget.task.time){
             BlocProvider.of<TimerBloc>(context).add(CompleteTimer());
           }
           return Container(
@@ -41,17 +68,17 @@ class TimerScreen extends StatelessWidget {
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height * 0.04,),
                 // Task Description
-                Text(task.description, style: TextStyle(fontSize: 20.0),),
+                Text(widget.task.description, style: TextStyle(fontSize: 20.0),),
                 SizedBox(height: MediaQuery.of(context).size.height * 0.01,),
                 // Task goal
-                Text('Goal: finish within ' + utility.timeConverter(task.time)),
+                Text('Goal: finish within ' + utility.timeConverter(widget.task.time)),
                 SizedBox(height: MediaQuery.of(context).size.height * 0.07,),
                 // Timer
                 BlocBuilder<TimerBloc, TimerState>(
                   builder: (context, state) {
-                    task.timeElapsed = task.time - state.duration;
-                    BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: task));
-                    return createTimer(context, state.duration, task.time);
+                    widget.task.timeElapsed = widget.task.time - state.duration;
+                    BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
+                    return createTimer(context, state.duration, widget.task.time);
                   }
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height * 0.05,),
@@ -67,7 +94,8 @@ class TimerScreen extends StatelessWidget {
                         return createButtonRow(context, 3);
                       } else if (state is TimerRunComplete){
                         print('vibrate');
-                        HapticFeedback.mediumImpact();
+                        showNotification();
+                        // HapticFeedback.mediumImpact();
                         return createButtonRow(context, 4);
                       } else {
                         return Row();
@@ -84,6 +112,18 @@ class TimerScreen extends StatelessWidget {
     );
   }
 
+  showNotification() async {
+    var android = AndroidNotificationDetails('id', 'channel ', 'description',
+      priority: Priority.high, 
+      importance: Importance.max
+    );
+    var iOS = IOSNotificationDetails();
+    var platform = new NotificationDetails(android: android, iOS: iOS);
+    await flutterLocalNotificationsPlugin.show(
+      0, 'Flutter devs', 'Flutter Local Notification Demo', platform,
+      payload: 'Welcome to the Local Notification demo'); 
+  }
+
   Widget createButtonRow(BuildContext context, int state){
     if (state == 1){
       // initial state
@@ -91,7 +131,7 @@ class TimerScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           GestureDetector(
-            onTap: () => BlocProvider.of<TimerBloc>(context).add(TimerStarted(duration: task.time - task.timeElapsed)),
+            onTap: () => BlocProvider.of<TimerBloc>(context).add(TimerStarted(duration: widget.task.time - widget.task.timeElapsed)),
             child: createButton(context, 'start')
           )
         ],
@@ -117,7 +157,7 @@ class TimerScreen extends StatelessWidget {
             child: createButton(context, 'resume')
           ),
           GestureDetector(
-            onTap: () => BlocProvider.of<TimerBloc>(context).add(TimerStarted(duration: task.time - task.timeElapsed)),
+            onTap: () => BlocProvider.of<TimerBloc>(context).add(TimerStarted(duration: widget.task.time - widget.task.timeElapsed)),
             child: createButton(context, 'add time')
           ),
         ],
@@ -129,8 +169,8 @@ class TimerScreen extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () {
-              task.isCompleted = true;
-              BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: task));
+              widget.task.isCompleted = true;
+              BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
               BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
             },
             child: createButton(context, 'complete')

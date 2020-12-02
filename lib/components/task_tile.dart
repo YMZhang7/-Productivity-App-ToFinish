@@ -1,4 +1,5 @@
 import 'package:ToFinish/blocs/blocs.dart';
+import 'package:ToFinish/functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/Task.dart';
@@ -29,7 +30,7 @@ class _TaskTileState extends State<TaskTile> {
             });
           },
           child: Container(
-            height: 50.0,
+            height: 80.0,
             decoration: BoxDecoration(
               // color: Colors.lightGreen,
               color: Colors.white,
@@ -44,17 +45,7 @@ class _TaskTileState extends State<TaskTile> {
                 ),
               )],
             ),
-            child: CheckboxListTile(
-              value: widget.task.isCompleted, // controls whether the box is checked
-              onChanged: (value){
-                setState(() {
-                  widget.task.isCompleted = !widget.task.isCompleted;
-                  BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
-                });
-              },
-              title: Text(widget.task.description),
-              controlAffinity: ListTileControlAffinity.leading,
-            ),
+            child: checkBoxTile(),
           ),
           secondaryBackground: Container(
             color: Colors.red,
@@ -77,6 +68,43 @@ class _TaskTileState extends State<TaskTile> {
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget checkBoxTile(){
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Checkbox(
+            value: widget.task.isCompleted, 
+            onChanged: (value){
+              setState(() {
+                widget.task.isCompleted = !widget.task.isCompleted;
+                BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
+              });
+            },
+          ),
+        ),
+        // SizedBox(width: 20.0,),
+        Flexible(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(widget.task.description, style: TextStyle(fontSize: 20.0,), overflow: TextOverflow.ellipsis,),
+                SizedBox(height: 10.0,),
+                Text('Goal: finish within ' + timeConverter(widget.task.time)),
+                SizedBox(height: 2.0,),
+                Text(timeConverter(widget.task.time - widget.task.timeElapsed) + ' left'),
+              ],
+            ),
+          ),
+        )
       ],
     );
   }
