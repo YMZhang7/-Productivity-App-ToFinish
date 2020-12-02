@@ -30,7 +30,7 @@ class _TaskTileState extends State<TaskTile> {
             });
           },
           child: Container(
-            height: 80.0,
+            height: 90.0,
             decoration: BoxDecoration(
               // color: Colors.lightGreen,
               color: Colors.white,
@@ -73,6 +73,31 @@ class _TaskTileState extends State<TaskTile> {
   }
 
   Widget checkBoxTile(){
+    List<Widget> textsShowing = [
+      Text(widget.task.description, style: TextStyle(fontSize: 20.0,), overflow: TextOverflow.ellipsis,),
+      SizedBox(height: 10.0,),
+    ];
+    if (widget.task.isCompleted){
+      textsShowing.add(
+        Text('Task completed using ' + timeConverter(widget.task.timeElapsed))
+      );
+      textsShowing.add(
+        SizedBox(height: 2.0,)
+      );
+      textsShowing.add(
+        Text('Original goal: ' + timeConverter(widget.task.time))
+      );
+    } else {
+      textsShowing.add(
+        Text('Goal: finish within ' + timeConverter(widget.task.time))
+      );
+      textsShowing.add(
+        SizedBox(height: 2.0,)
+      );
+      textsShowing.add(
+        Text(timeConverter(widget.task.time - widget.task.timeElapsed) + ' left')
+      );
+    }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -88,20 +113,13 @@ class _TaskTileState extends State<TaskTile> {
             },
           ),
         ),
-        // SizedBox(width: 20.0,),
         Flexible(
           child: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
+            padding: const EdgeInsets.only(left: 8.0, top: 5.0, bottom: 5.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(widget.task.description, style: TextStyle(fontSize: 20.0,), overflow: TextOverflow.ellipsis,),
-                SizedBox(height: 10.0,),
-                Text('Goal: finish within ' + timeConverter(widget.task.time)),
-                SizedBox(height: 2.0,),
-                Text(timeConverter(widget.task.time - widget.task.timeElapsed) + ' left'),
-              ],
+              children: textsShowing,
             ),
           ),
         )
