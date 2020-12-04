@@ -78,6 +78,10 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
 
   Stream<TimerState> _mapTimerResetToState(TimerReset reset) async*{
     _tickerSubscription?.cancel();
+    if (reset.task != null){
+      this.task = reset.task;
+      this._duration = reset.task.time - reset.task.timeElapsed;
+    }
     yield TimerInitial(_duration);
   }
 }

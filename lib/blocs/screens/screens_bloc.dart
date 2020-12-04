@@ -7,6 +7,12 @@ import '../blocs.dart';
 class ScreensBloc extends Bloc<ScreensEvent, ScreensState> {
   ScreensBloc() : super(InTimersListScreen()); // set which screen is the homescreen
 
+   @override
+  void onTransition(Transition<ScreensEvent, ScreensState> transition) {
+    print(transition);
+    super.onTransition(transition);
+  }
+
   @override
   Stream<ScreensState> mapEventToState(
     ScreensEvent event,
@@ -44,6 +50,12 @@ class ScreensBloc extends Bloc<ScreensEvent, ScreensState> {
         yield InTLEditNewTaskScreen(task: event.task);
       } else if (state is InListScreen){
         yield InLEditNewTaskScreen(task: event.task);
+      }
+    } else if (event is ReloadTimerScreen){
+      if (state is InTLTimerScreen){
+        yield InTLTimerScreen(task: event.task);
+      } else if (state is InLTimerScreen){
+        yield InLTimerScreen(task: event.task);
       }
     }
   }

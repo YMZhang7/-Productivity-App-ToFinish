@@ -15,23 +15,7 @@ class TasksList extends StatefulWidget {
 }
 
 class _TasksListState extends State<TasksList> with TickerProviderStateMixin{
-  AnimationController _controller;
-  @override
-  void initState() {
-    super.initState();
-
-    _controller = AnimationController(
-      duration: Duration(milliseconds: 400 * widget.tasks.length),
-      vsync: this
-    );
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +35,6 @@ class _TasksListState extends State<TasksList> with TickerProviderStateMixin{
       );
       tiles.add(
         AnimationListTile(
-          controller: _controller,
           child: Container(
             height: 50.0,
             decoration: BoxDecoration(
@@ -68,7 +51,6 @@ class _TasksListState extends State<TasksList> with TickerProviderStateMixin{
       for (int i = 0; i < tasks.length; i++){
         tiles.add(
           AnimationListTile(
-            controller: _controller, 
             child: TaskTile(
               task: tasks[i],
               toDelete: (value){
@@ -92,7 +74,7 @@ class _TasksListState extends State<TasksList> with TickerProviderStateMixin{
     } else {
       for (int i = 0; i < tasks.length; i++){
         tiles.add(
-          AnimationListTile(controller: _controller, 
+          AnimationListTile(
             child: TaskTile(
               task: tasks[i],
               toDelete: (value){

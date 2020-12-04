@@ -1,3 +1,4 @@
+import 'package:ToFinish/models/Task.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
@@ -21,7 +22,10 @@ class TimerPaused extends TimerEvent {}
 
 class TimerResumed extends TimerEvent {}
 
-class TimerReset extends TimerEvent {}
+class TimerReset extends TimerEvent {
+  final Task task;
+  const TimerReset({this.task});
+}
 
 class TimerTicked extends TimerEvent {
   final int duration;

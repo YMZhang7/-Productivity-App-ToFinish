@@ -1,4 +1,5 @@
 import 'package:ToFinish/blocs/blocs.dart';
+import 'package:ToFinish/blocs/screens/screens_bloc.dart';
 import 'package:ToFinish/components/time_picker.dart';
 import 'package:ToFinish/models/Task.dart';
 import 'package:ToFinish/screens/add_new_task_screen.dart';
@@ -90,16 +91,16 @@ class _TimerScreenState extends State<TimerScreen> {
                     child: BlocBuilder<TimerBloc, TimerState>(
                       builder: (context, state){
                         if (state is TimerInitial){
-                          return createButtonRow(context, 1);
+                          return createButtonRow(context, 1, state);
                         } else if (state is TimerRunInProgress){
-                          return createButtonRow(context, 2);
+                          return createButtonRow(context, 2, state);
                         } else if (state is TimerRunPause){
-                          return createButtonRow(context, 3);
+                          return createButtonRow(context, 3, state);
                         } else if (state is TimerRunComplete){
                           print('vibrate');
                           showNotification();
                           // HapticFeedback.mediumImpact();
-                          return createButtonRow(context, 4);
+                          return createButtonRow(context, 4, state);
                         } else {
                           return Row();
                         }
@@ -128,8 +129,7 @@ class _TimerScreenState extends State<TimerScreen> {
       payload: 'Welcome to the Local Notification demo'); 
   }
 
-  Widget createButtonRow(BuildContext context, int state){
-    int timeUpdated = widget.task.time;
+  Widget createButtonRow(BuildContext context, int state, TimerState timerState){
     if (state == 1){
       // initial state
       String text = "start";
@@ -170,41 +170,7 @@ class _TimerScreenState extends State<TimerScreen> {
               showModalBottomSheet(
                 context: context, 
                 builder: (context){
-                  return Container(
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    // color: Colors.green,
-                    child: Column(
-                      children: [
-                        SizedBox(height: 20.0,),
-                        Text('Hour|Minute|Second', style: TextStyle(fontSize: 20.0),),
-                        SizedBox(height: 10.0,),
-                        TimePicker(
-                          task: widget.task,
-                          onTimeSelectedChange: (value){
-                            timeUpdated = value;
-                          },
-                        ),
-                        SizedBox(height: 20.0,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            RaisedButton(
-                              child: Text('update'),
-                              onPressed: (){
-                                Navigator.of(context).pop();
-                                if (widget.task.time != timeUpdated){
-                                  setState(() {
-                                    widget.task.time = timeUpdated;
-                                  });
-                                  BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
-                                }
-                              }
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  );
+                  return createBottomTimeEdittor(timerState);
                 }
               );
             },
@@ -230,7 +196,7 @@ class _TimerScreenState extends State<TimerScreen> {
               showBottomSheet(
                 context: context, 
                 builder: (context){
-                  return TimeEdittor();
+                  return createBottomTimeEdittor(timerState);
                 }
               );
             },
@@ -241,6 +207,48 @@ class _TimerScreenState extends State<TimerScreen> {
     } else {
       return Row();
     }
+  }
+
+  Widget createBottomTimeEdittor(TimerState state){
+    int timeUpdated = widget.task.time;
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.4,
+      // color: Colors.green,
+      child: Column(
+        children: [
+          SizedBox(height: 20.0,),
+          Text('Hour|Minute|Second', style: TextStyle(fontSize: 20.0),),
+          SizedBox(height: 10.0,),
+          TimePicker(
+            task: widget.task,
+            onTimeSelectedChange: (value){
+              timeUpdated = value;
+            },
+          ),
+          SizedBox(height: 20.0,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              RaisedButton(
+                child: Text('update'),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                  if (widget.task.time != timeUpdated){
+                    setState(() {
+                      widget.task.time = timeUpdated;
+                      widget.task.isCompleted = false;
+                    });
+                    // BlocProvider.of<ScreensBloc>(context).add(ReloadTimerScreen(task: widget.task));
+                    BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
+                    BlocProvider.of<TimerBloc>(context).add(TimerReset(task: widget.task));
+                  }
+                }
+              )
+            ],
+          )
+        ],
+      ),
+    );
   }
 
   Widget createButton(BuildContext context, String text){
@@ -257,7 +265,6 @@ class _TimerScreenState extends State<TimerScreen> {
   }
 
   Widget createTimer(BuildContext context, int time, int totalTime){
-    print(utility.timeConverter(92));
     return Container(
       height: MediaQuery.of(context).size.width * 0.6,
       width: MediaQuery.of(context).size.width * 0.6,
@@ -281,66 +288,66 @@ class _TimerScreenState extends State<TimerScreen> {
   }
 }
 
-class TimeEdittor extends StatefulWidget {
-  @override
-  _TimeEdittorState createState() => _TimeEdittorState();
-}
+// class TimeEdittor extends StatefulWidget {
+//   @override
+//   _TimeEdittorState createState() => _TimeEdittorState();
+// }
 
-class _TimeEdittorState extends State<TimeEdittor> {
-  int timeAdded = 0;
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.4,
-        child: Column(
-          children: [
-            SizedBox(height: 30.0,),
-            Text('Hour|Minute|Second', style: TextStyle(fontSize: 20.0),),
-            SizedBox(height: 20.0,),
-            Container(
-              child: new TimePickerSpinner(
-                // is24HourMode: false,
-                isShowSeconds: true,
-                normalTextStyle: TextStyle(
-                  fontSize: 24,
-                  color: Colors.grey
-                ),
-                highlightedTextStyle: TextStyle(
-                  fontSize: 24,
-                  color: Colors.black
-                ),
-                spacing: 50,
-                itemHeight: 50,
-                isForce2Digits: true,
-                onTimeChange: (time) {
-                  setState(() {
-                    timeAdded = time.hour * 3600 + time.minute * 60 + time.second;
-                  });
-                },
-              )
-            ),
-            SizedBox(height: 30.0,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                RaisedButton(
-                  onPressed: (){
-                    Navigator.pop(context);
-                  },
-                  child: Text('cancel'),
-                ),
-                RaisedButton(
-                  onPressed: (){
-                    // update time
-                    print('time added: ' + timeAdded.toString());
-                    Navigator.pop(context);
-                  },
-                  child: Text('update'),
-                ),
-              ],
-            )
-          ],
-        ),
-    );
-  }
-}
+// class _TimeEdittorState extends State<TimeEdittor> {
+//   int timeAdded = 0;
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       height: MediaQuery.of(context).size.height * 0.4,
+//         child: Column(
+//           children: [
+//             SizedBox(height: 30.0,),
+//             Text('Hour|Minute|Second', style: TextStyle(fontSize: 20.0),),
+//             SizedBox(height: 20.0,),
+//             Container(
+//               child: new TimePickerSpinner(
+//                 // is24HourMode: false,
+//                 isShowSeconds: true,
+//                 normalTextStyle: TextStyle(
+//                   fontSize: 24,
+//                   color: Colors.grey
+//                 ),
+//                 highlightedTextStyle: TextStyle(
+//                   fontSize: 24,
+//                   color: Colors.black
+//                 ),
+//                 spacing: 50,
+//                 itemHeight: 50,
+//                 isForce2Digits: true,
+//                 onTimeChange: (time) {
+//                   setState(() {
+//                     timeAdded = time.hour * 3600 + time.minute * 60 + time.second;
+//                   });
+//                 },
+//               )
+//             ),
+//             SizedBox(height: 30.0,),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//               children: [
+//                 RaisedButton(
+//                   onPressed: (){
+//                     Navigator.pop(context);
+//                   },
+//                   child: Text('cancel'),
+//                 ),
+//                 RaisedButton(
+//                   onPressed: (){
+//                     // update time
+//                     print('time added: ' + timeAdded.toString());
+//                     Navigator.pop(context);
+//                   },
+//                   child: Text('update'),
+//                 ),
+//               ],
+//             )
+//           ],
+//         ),
+//     );
+//   }
+// }

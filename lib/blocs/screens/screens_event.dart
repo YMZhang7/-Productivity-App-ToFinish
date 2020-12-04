@@ -27,3 +27,8 @@ class EditTask extends ScreensEvent {
   Task task;
   EditTask({@required this.task});
 }
+
+class ReloadTimerScreen extends ScreensEvent{
+  Task task;
+  ReloadTimerScreen({@required this.task});
+}
