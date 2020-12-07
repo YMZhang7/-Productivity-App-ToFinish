@@ -2,12 +2,10 @@ import 'package:ToFinish/blocs/blocs.dart';
 import 'package:ToFinish/blocs/screens/screens_bloc.dart';
 import 'package:ToFinish/components/time_picker.dart';
 import 'package:ToFinish/models/Task.dart';
-import 'package:ToFinish/screens/add_new_task_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../functions.dart' as utility;
 import '../custom_colour_scheme.dart';
-import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class TimerScreen extends StatefulWidget {
@@ -133,7 +131,7 @@ class _TimerScreenState extends State<TimerScreen> {
     if (state == 1){
       // initial state
       String text = "start";
-      if (widget.task.time > widget.task.timeElapsed){
+      if (widget.task.timeElapsed != 0){
         text = "continue";
       }
       return Row(
@@ -148,35 +146,47 @@ class _TimerScreenState extends State<TimerScreen> {
     } else if (state == 2){
       // running
       return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           GestureDetector(
             onTap: () => BlocProvider.of<TimerBloc>(context).add(TimerPaused()),
             child: createButton(context, 'pause')
           ),
+          SizedBox(height: 20.0,),
+          GestureDetector(
+            onTap: () => BlocProvider.of<TimerBloc>(context).add(TimerReset()),
+            child: createButton(context, 'reset')
+          ),
         ],
       );
     } else if (state == 3){
       // paused
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          GestureDetector(
-            onTap: () => BlocProvider.of<TimerBloc>(context).add(TimerResumed()),
-            child: createButton(context, 'resume')
-          ),
-          GestureDetector(
-            onTap: () {
-              showModalBottomSheet(
-                context: context, 
-                builder: (context){
-                  return createBottomTimeEdittor(timerState);
-                }
-              );
-            },
-            child: createButton(context, 'add time')
-          ),
-        ],
+      return Padding(
+        padding: const EdgeInsets.only(left: 30.0, right: 30.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GestureDetector(
+              onTap: () => BlocProvider.of<TimerBloc>(context).add(TimerResumed()),
+              child: createButton(context, 'resume')
+            ),
+            GestureDetector(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context, 
+                  builder: (context){
+                    return createBottomTimeEdittor(timerState);
+                  }
+                );
+              },
+              child: createButton(context, 'add time')
+            ),
+            GestureDetector(
+              onTap: () => BlocProvider.of<TimerBloc>(context).add(TimerReset()),
+              child: createButton(context, 'reset')
+            ),
+          ],
+        ),
       );
     } else if (state == 4){
       // completed
@@ -235,10 +245,20 @@ class _TimerScreenState extends State<TimerScreen> {
                   Navigator.of(context).pop();
                   if (widget.task.time != timeUpdated){
                     setState(() {
-                      widget.task.time = timeUpdated;
-                      widget.task.isCompleted = false;
+                      if (timeUpdated < widget.task.timeElapsed){
+                        // change the timeelapsed as well ?
+                        print('new time is less than time elapsed');
+                      } else {
+                        widget.task.time = timeUpdated;
+                        // widget.task.isCompleted = false;
+                        if (widget.task.time > widget.task.timeElapsed){
+                          widget.task.isCompleted = false;
+                        } else {
+                          widget.task.isCompleted = true;
+                        }
+                      }
+                      
                     });
-                    // BlocProvider.of<ScreensBloc>(context).add(ReloadTimerScreen(task: widget.task));
                     BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
                     BlocProvider.of<TimerBloc>(context).add(TimerReset(task: widget.task));
                   }
@@ -253,7 +273,7 @@ class _TimerScreenState extends State<TimerScreen> {
 
   Widget createButton(BuildContext context, String text){
     return Container(
-      width: 100.0,
+      width: MediaQuery.of(context).size.width * 0.25,
       height: 50.0,
       // color: Colors.yellow,
       decoration: BoxDecoration(
@@ -287,67 +307,3 @@ class _TimerScreenState extends State<TimerScreen> {
     );
   }
 }
-
-// class TimeEdittor extends StatefulWidget {
-//   @override
-//   _TimeEdittorState createState() => _TimeEdittorState();
-// }
-
-// class _TimeEdittorState extends State<TimeEdittor> {
-//   int timeAdded = 0;
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       height: MediaQuery.of(context).size.height * 0.4,
-//         child: Column(
-//           children: [
-//             SizedBox(height: 30.0,),
-//             Text('Hour|Minute|Second', style: TextStyle(fontSize: 20.0),),
-//             SizedBox(height: 20.0,),
-//             Container(
-//               child: new TimePickerSpinner(
-//                 // is24HourMode: false,
-//                 isShowSeconds: true,
-//                 normalTextStyle: TextStyle(
-//                   fontSize: 24,
-//                   color: Colors.grey
-//                 ),
-//                 highlightedTextStyle: TextStyle(
-//                   fontSize: 24,
-//                   color: Colors.black
-//                 ),
-//                 spacing: 50,
-//                 itemHeight: 50,
-//                 isForce2Digits: true,
-//                 onTimeChange: (time) {
-//                   setState(() {
-//                     timeAdded = time.hour * 3600 + time.minute * 60 + time.second;
-//                   });
-//                 },
-//               )
-//             ),
-//             SizedBox(height: 30.0,),
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//               children: [
-//                 RaisedButton(
-//                   onPressed: (){
-//                     Navigator.pop(context);
-//                   },
-//                   child: Text('cancel'),
-//                 ),
-//                 RaisedButton(
-//                   onPressed: (){
-//                     // update time
-//                     print('time added: ' + timeAdded.toString());
-//                     Navigator.pop(context);
-//                   },
-//                   child: Text('update'),
-//                 ),
-//               ],
-//             )
-//           ],
-//         ),
-//     );
-//   }
-// }

@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 
 class AnimationBox extends StatefulWidget {
   final Widget child;
-  final int index;
   final int total;
-  const AnimationBox({@required this.child, @required this.index, @required this.total});
+  const AnimationBox({@required this.child, @required this.total});
   @override
   _AnimationBoxState createState() => _AnimationBoxState();
 }
@@ -18,7 +17,7 @@ class _AnimationBoxState extends State<AnimationBox> with TickerProviderStateMix
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 600)
+      duration: Duration(milliseconds: 1000)
     );
     _controller.forward();
     _animation = Tween(
@@ -27,10 +26,7 @@ class _AnimationBoxState extends State<AnimationBox> with TickerProviderStateMix
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Interval(
-          (widget.index-1)/widget.total, widget.index/widget.total,
-          curve: Curves.easeOutCirc
-        ),
+        curve: Curves.easeOutCirc,
       )
     );
     // widget.controller.forward(); // start the animation

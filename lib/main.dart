@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
     Wakelock.enable();
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,

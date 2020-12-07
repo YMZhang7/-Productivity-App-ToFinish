@@ -24,7 +24,7 @@ class TasksMatrix extends StatelessWidget {
     List<Widget> matrix = [];
     for (int i = 0; i < tasks.length; i++){
         matrix.add(
-          AnimationBox(child: TaskBox(task: tasks[i]), index: i+1, total: tasks.length), 
+          AnimationBox(child: TaskBox(task: tasks[i]), total: tasks.length), 
         );
     }
     return matrix;
