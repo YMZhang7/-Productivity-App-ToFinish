@@ -20,7 +20,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
         _duration = task.time - task.timeElapsed,
         super(TimerInitial(task.time - task.timeElapsed));
 
-  @override
+  // @override
   TimerState get initialState => TimerInitial(_duration);
 
   @override

@@ -1,4 +1,3 @@
-import 'package:ToFinish/components/tasks_list.dart';
 import 'package:ToFinish/models/Task.dart';
 import 'package:equatable/equatable.dart';
 

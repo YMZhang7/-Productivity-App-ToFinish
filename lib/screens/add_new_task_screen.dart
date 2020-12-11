@@ -65,6 +65,10 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       helperText: isEmpty ? 'This field cannot be empty' : '',
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.clear_rounded), 
+                        onPressed: () => _textEditingController.clear(),
+                      )
                     ),
                     onChanged: (value) {
                       if (_textEditingController.text.length != 0){

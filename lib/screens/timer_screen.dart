@@ -17,12 +17,12 @@ class TimerScreen extends StatefulWidget {
 }
 
 class _TimerScreenState extends State<TimerScreen> {
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
     super.initState();
-    var initializationSettingsAndroid = AndroidInitializationSettings('flutter_devs');
+    var initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettingsIOs = IOSInitializationSettings();
     var initSettings = InitializationSettings(
       android: initializationSettingsAndroid, 
@@ -40,88 +40,96 @@ class _TimerScreenState extends State<TimerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocBuilder<TimerBloc, TimerState>(
-        builder: (context, state){
-          if (widget.task.timeElapsed == widget.task.time){
-            BlocProvider.of<TimerBloc>(context).add(CompleteTimer());
-          }
-          return Center(
-            child: Container(
-              color: Colors.white,
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                children: [
-                  // Return button
-                  SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: IconButton(
-                          icon: Icon(Icons.arrow_back_ios, color: Colors.black,), 
-                          onPressed: (){
-                            BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
-                          }
+    return WillPopScope(
+      onWillPop: (){
+        // TODO: test this
+        BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
+      },
+      child: Scaffold(
+        body: BlocBuilder<TimerBloc, TimerState>(
+          builder: (context, state){
+            if (widget.task.timeElapsed == widget.task.time){
+              BlocProvider.of<TimerBloc>(context).add(CompleteTimer());
+            }
+            return Center(
+              child: Container(
+                color: Colors.white,
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(
+                  children: [
+                    // Return button
+                    SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10.0),
+                        child: Align(
+                          alignment: Alignment.topLeft,
+                          child: IconButton(
+                            icon: Icon(Icons.arrow_back_ios, color: Colors.black,), 
+                            onPressed: (){
+                              BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
+                            }
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.04,),
-                  // Task Description
-                  Text(widget.task.description, style: TextStyle(fontSize: 20.0),),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.01,),
-                  // Task goal
-                  Text('Goal: finish within ' + utility.timeConverter(widget.task.time)),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.07,),
-                  // Timer
-                  BlocBuilder<TimerBloc, TimerState>(
-                    builder: (context, state) {
-                      widget.task.timeElapsed = widget.task.time - state.duration;
-                      BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
-                      return createTimer(context, state.duration, widget.task.time);
-                    }
-                  ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.05,),
-                  // Buttons
-                  SafeArea(
-                    child: BlocBuilder<TimerBloc, TimerState>(
-                      builder: (context, state){
-                        if (state is TimerInitial){
-                          return createButtonRow(context, 1, state);
-                        } else if (state is TimerRunInProgress){
-                          return createButtonRow(context, 2, state);
-                        } else if (state is TimerRunPause){
-                          return createButtonRow(context, 3, state);
-                        } else if (state is TimerRunComplete){
-                          print('vibrate');
-                          showNotification();
-                          // HapticFeedback.mediumImpact();
-                          return createButtonRow(context, 4, state);
-                        } else {
-                          return Row();
-                        }
-                      },
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.04,),
+                    // Task Description
+                    Text(widget.task.description, style: TextStyle(fontSize: 20.0),),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.01,),
+                    // Task goal
+                    Text('Goal: finish within ' + utility.timeConverter(widget.task.time)),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.07,),
+                    // Timer
+                    BlocBuilder<TimerBloc, TimerState>(
+                      builder: (context, state) {
+                        widget.task.timeElapsed = widget.task.time - state.duration;
+                        BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
+                        return createTimer(context, state.duration, widget.task.time);
+                      }
                     ),
-                  ),
-                ],
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.05,),
+                    // Buttons
+                    SafeArea(
+                      child: BlocBuilder<TimerBloc, TimerState>(
+                        builder: (context, state){
+                          if (state is TimerInitial){
+                            return createButtonRow(context, 1, state);
+                          } else if (state is TimerRunInProgress){
+                            return createButtonRow(context, 2, state);
+                          } else if (state is TimerRunPause){
+                            return createButtonRow(context, 3, state);
+                          } else if (state is TimerRunComplete){
+                            print('vibrate');
+                            _showNotification();
+                            
+                            // HapticFeedback.mediumImpact();
+                            return createButtonRow(context, 4, state);
+                          } else {
+                            return Row();
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        }
+            );
+          }
+        ),
+        
       ),
-      
     );
   }
 
-  showNotification() async {
+  Future<void> _showNotification() async {
     var android = AndroidNotificationDetails('id', 'channel ', 'description',
       priority: Priority.high, 
       importance: Importance.max
     );
     var iOS = IOSNotificationDetails();
     var platform = new NotificationDetails(android: android, iOS: iOS);
+    print("show notification running");
     await flutterLocalNotificationsPlugin.show(
       0, 'Flutter devs', 'Flutter Local Notification Demo', platform,
       payload: 'Welcome to the Local Notification demo'); 
