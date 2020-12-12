@@ -42,7 +42,7 @@ class _TimerScreenState extends State<TimerScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: (){
-        // TODO: test this
+        // back key pressed
         BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
       },
       child: Scaffold(
@@ -101,8 +101,9 @@ class _TimerScreenState extends State<TimerScreen> {
                             return createButtonRow(context, 3, state);
                           } else if (state is TimerRunComplete){
                             print('vibrate');
-                            _showNotification();
-                            
+                            if (!widget.task.isCompleted){
+                              _showNotification();
+                            }
                             // HapticFeedback.mediumImpact();
                             return createButtonRow(context, 4, state);
                           } else {
@@ -129,9 +130,8 @@ class _TimerScreenState extends State<TimerScreen> {
     );
     var iOS = IOSNotificationDetails();
     var platform = new NotificationDetails(android: android, iOS: iOS);
-    print("show notification running");
     await flutterLocalNotificationsPlugin.show(
-      0, 'Flutter devs', 'Flutter Local Notification Demo', platform,
+      0, 'Timer Completed', widget.task.description, platform,
       payload: 'Welcome to the Local Notification demo'); 
   }
 

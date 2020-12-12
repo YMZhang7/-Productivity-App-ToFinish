@@ -45,7 +45,7 @@ class _ListScreenState extends State<ListScreen> {
         } else if (state is TasksLoadSuccess){
           return Scaffold(
             appBar: AppBar(
-              title: Text("Mona's Day", style: TextStyle(color: Colors.black),),
+              title: Text("To-Do", style: TextStyle(color: Colors.black),),
               backgroundColor: Colors.white,
               actions: [
                 IconButton(

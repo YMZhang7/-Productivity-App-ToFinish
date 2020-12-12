@@ -4,15 +4,29 @@ import '../components/components.dart';
 import 'package:flutter/material.dart';
 import '../custom_colour_scheme.dart';
 
-class TimersListScreen extends StatelessWidget {
+class TimersListScreen extends StatefulWidget {
+  @override
+  _TimersListScreenState createState() => _TimersListScreenState();
+}
+
+class _TimersListScreenState extends State<TimersListScreen> {
+  bool completedTasksVisible = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mona's Day", style: TextStyle(color: Colors.black),),
+        title: Text("To-Do", style: TextStyle(color: Colors.black),),
         backgroundColor: Colors.white,
         elevation: 0.0,
         actions: [
+          IconButton(
+            icon: completedTasksVisible ? Icon(Icons.visibility, color: Colors.black,) : Icon(Icons.visibility_off, color: Colors.black,),
+            onPressed: (){
+              setState(() {
+                completedTasksVisible = !completedTasksVisible;
+              });
+            },
+          ),
           IconButton(
             icon: Icon(Icons.list, color: Colors.black,), 
             onPressed: () {
@@ -29,7 +43,7 @@ class TimersListScreen extends StatelessWidget {
                 if (state is TasksLoadSuccess){
                   return Container(
                     color: Colors.white,
-                    child: TasksMatrix(tasks: state.tasks),
+                    child: TasksMatrix(tasks: state.tasks, showCompleted: completedTasksVisible,),
                   );
                 } else if (state is TasksLoadInProgress){
                   BlocProvider.of<TodoBloc>(context).add(LoadTasks());
