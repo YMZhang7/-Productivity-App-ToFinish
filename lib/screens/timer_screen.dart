@@ -8,6 +8,8 @@ import '../functions.dart' as utility;
 import '../custom_colour_scheme.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import '../functions.dart';
+
 class TimerScreen extends StatefulWidget {
   final Task task;
   const TimerScreen({@required this.task});
@@ -44,6 +46,7 @@ class _TimerScreenState extends State<TimerScreen> {
       onWillPop: (){
         // back key pressed
         BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
+        return null;
       },
       child: Scaffold(
         body: BlocBuilder<TimerBloc, TimerState>(
@@ -250,13 +253,33 @@ class _TimerScreenState extends State<TimerScreen> {
               RaisedButton(
                 child: Text('update'),
                 onPressed: (){
-                  Navigator.of(context).pop();
                   if (widget.task.time != timeUpdated){
-                    setState(() {
-                      if (timeUpdated < widget.task.timeElapsed){
-                        // change the timeelapsed as well ?
-                        print('new time is less than time elapsed');
-                      } else {
+                    if (timeUpdated < widget.task.timeElapsed){
+                      print('hhhh');
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context){
+                          return AlertDialog(
+                            title: Text('Warning'),
+                            content: SingleChildScrollView(
+                              child: ListBody(
+                                children: [
+                                  Text('Your goal cannot be less than the time elapsed (' + timeConverter(widget.task.timeElapsed) + ')')
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                child: Text('Okay'), 
+                                onPressed: () => Navigator.of(context).pop()
+                              )
+                            ],
+                          );
+                        }
+                      );
+                    } else {
+                      Navigator.of(context).pop();
+                      setState(() {
                         widget.task.time = timeUpdated;
                         // widget.task.isCompleted = false;
                         if (widget.task.time > widget.task.timeElapsed){
@@ -264,11 +287,10 @@ class _TimerScreenState extends State<TimerScreen> {
                         } else {
                           widget.task.isCompleted = true;
                         }
-                      }
-                      
-                    });
-                    BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
-                    BlocProvider.of<TimerBloc>(context).add(TimerReset(task: widget.task));
+                      });
+                      BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
+                      BlocProvider.of<TimerBloc>(context).add(TimerReset(task: widget.task));
+                    } 
                   }
                 }
               )

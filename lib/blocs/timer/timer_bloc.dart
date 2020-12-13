@@ -23,11 +23,11 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   // @override
   TimerState get initialState => TimerInitial(_duration);
 
-  @override
-  void onTransition(Transition<TimerEvent, TimerState> transition) {
-    print(transition);
-    super.onTransition(transition);
-  }
+  // @override
+  // void onTransition(Transition<TimerEvent, TimerState> transition) {
+  //   print(transition);
+  //   super.onTransition(transition);
+  // }
 
   @override
   Stream<TimerState> mapEventToState(TimerEvent event) async* {

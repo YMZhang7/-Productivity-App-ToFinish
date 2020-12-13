@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 
 
 class TimePicker extends StatefulWidget {
-  Task task;
-  Function(int) onTimeSelectedChange;
+  final Task task;
+  final Function(int) onTimeSelectedChange;
 
-  TimePicker({this.task, @required this.onTimeSelectedChange});
+  const TimePicker({this.task, @required this.onTimeSelectedChange});
   @override
   _TimePickerState createState() => _TimePickerState();
 }

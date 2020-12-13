@@ -1,4 +1,5 @@
 import 'package:ToFinish/blocs/blocs.dart';
+import 'package:ToFinish/functions.dart';
 import 'package:ToFinish/models/Task.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,8 +7,8 @@ import 'package:ToFinish/components/components.dart';
 import '../custom_colour_scheme.dart';
 
 class AddNewTaskScreen extends StatefulWidget{
-  Task currentTask;
-  AddNewTaskScreen({this.currentTask});
+  final Task currentTask;
+  const AddNewTaskScreen({this.currentTask});
   @override
   _AddNewTaskScreenState createState() => _AddNewTaskScreenState();
 }
@@ -42,6 +43,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
       onWillPop: (){
         // back key pressed
         BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
+        return null;
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -112,9 +114,6 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                     if (_textEditingController.text.length == 0){
                       setState(() {
                         isEmpty = true;
-                        // AlertDialog(title: Text('Description cannot be empty'),);
-                        print('empty');
-                        print(isEmpty);
                       });
                     } else {
                       description = _textEditingController.text;
@@ -129,11 +128,25 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                         if (timeRequired > widget.currentTask.timeElapsed){
                           widget.currentTask.time = timeRequired;
                         } else {
-                          // TODO: if the time set is less than time elapsed
+                          return AlertDialog(
+                            title: Text('Warning'),
+                            content: SingleChildScrollView(
+                              child: ListBody(
+                                children: [
+                                  Text('Your goal cannot be less than the time elapsed (' + timeConverter(widget.currentTask.timeElapsed) + ')')
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                child: Text('Okay'), 
+                                onPressed: () => Navigator.of(context).pop()
+                              )
+                            ],
+                          );
                         }
                         BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.currentTask));
                         BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
-                        
                       }
                     }
                   },

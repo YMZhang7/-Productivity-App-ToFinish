@@ -10,11 +10,11 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   TodoBloc() : super(TasksLoadInProgress());
   DBHelper dbHelper = DBHelper();
 
-  @override
-  void onTransition(Transition<TodoEvent, TodoState> transition) {
-    print(transition);
-    super.onTransition(transition);
-  }
+  // @override
+  // void onTransition(Transition<TodoEvent, TodoState> transition) {
+  //   print(transition);
+  //   super.onTransition(transition);
+  // }
 
   @override
   Stream<TodoState> mapEventToState(
