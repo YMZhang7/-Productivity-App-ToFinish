@@ -38,7 +38,6 @@ class TaskBox extends StatelessWidget{
             LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {   
                 double widthOfText = constraints.maxWidth * 0.7;  
-                print(widthOfText);
                 return Center(
                   child: Container(
                     width: widthOfText,

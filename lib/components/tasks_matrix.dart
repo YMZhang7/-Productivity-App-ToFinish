@@ -30,7 +30,6 @@ class TasksMatrix extends StatelessWidget {
         );
       } else {
         if (!tasks[i].isCompleted){
-          print('hhhhhhh');
           matrix.add(
             AnimationBox(child: TaskBox(task: tasks[i]), total: tasks.length), 
           );

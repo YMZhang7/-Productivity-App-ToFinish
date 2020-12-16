@@ -1,30 +1,30 @@
-import 'package:ToFinish/blocs/screens/screens_bloc.dart';
-import 'package:ToFinish/components/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:ToFinish/components/components.dart';
 import '../blocs/blocs.dart';
 import '../custom_colour_scheme.dart';
 
 class ListScreen extends StatefulWidget {
-  // final List<Task> tasks;
-  // const ListScreen({@required this.tasks});
-
   @override
   _ListScreenState createState() => _ListScreenState();
 }
 
 class _ListScreenState extends State<ListScreen> {
   ScrollController _scrollController;
+
   @override
   void initState() {
     _scrollController = ScrollController();
     super.initState();
   }
+  
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TodoBloc, TodoState>(

@@ -1,8 +1,8 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ToFinish/blocs/blocs.dart';
 import 'package:ToFinish/functions.dart';
 import 'package:ToFinish/models/Task.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ToFinish/components/components.dart';
 import '../custom_colour_scheme.dart';
 
@@ -17,9 +17,9 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
   String description = "";
   int timeRequired = 0;
   bool isEmpty = false;
-  TextEditingController _textEditingController = TextEditingController();
   String title = "New Task";
   String buttonLabel = "Add";
+  TextEditingController _textEditingController = TextEditingController();
 
   @override
   void initState() {

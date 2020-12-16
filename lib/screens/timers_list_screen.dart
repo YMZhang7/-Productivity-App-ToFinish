@@ -1,7 +1,8 @@
-import 'package:ToFinish/blocs/blocs.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../components/components.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../components/components.dart';
+import 'package:ToFinish/blocs/blocs.dart';
 import '../custom_colour_scheme.dart';
 
 class TimersListScreen extends StatefulWidget {
@@ -64,9 +65,7 @@ class _TimersListScreenState extends State<TimersListScreen> {
                 builder: (context, scrollController){
                   return Container(
                     decoration: BoxDecoration(
-                      // color: Theme.of(context).colorScheme.colour2,
                       color: Colors.transparent,
-                      // borderRadius: BorderRadius.only(topLeft: Radius.circular(40.0), topRight: Radius.circular(40.0)),
                     ),
                     child: BlocBuilder<TodoBloc, TodoState>(
                       builder: (context, state) {

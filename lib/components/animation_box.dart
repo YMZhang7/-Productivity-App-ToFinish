@@ -29,7 +29,6 @@ class _AnimationBoxState extends State<AnimationBox> with TickerProviderStateMix
         curve: Curves.easeOutCirc,
       )
     );
-    // widget.controller.forward(); // start the animation
   } 
 
   @override

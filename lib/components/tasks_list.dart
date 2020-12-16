@@ -68,7 +68,6 @@ class _TasksListState extends State<TasksList> with TickerProviderStateMixin{
             total: tasks.length + 1, 
           )
         );
-        // tiles.add(Divider(height: 5.0,));
         tiles.add(SizedBox(height: 5.0,));
       }
     } else {
@@ -92,7 +91,6 @@ class _TasksListState extends State<TasksList> with TickerProviderStateMixin{
             total: tasks.length,
           )
         );
-        // tiles.add(Divider(height: 5.0,));
         tiles.add(SizedBox(height: 5.0,));
       }
     }

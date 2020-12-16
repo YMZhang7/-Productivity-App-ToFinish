@@ -1,13 +1,12 @@
-import 'package:ToFinish/blocs/blocs.dart';
-import 'package:ToFinish/blocs/screens/screens_bloc.dart';
-import 'package:ToFinish/components/time_picker.dart';
-import 'package:ToFinish/models/Task.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../functions.dart' as utility;
-import '../custom_colour_scheme.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import 'package:ToFinish/blocs/blocs.dart';
+import 'package:ToFinish/components/time_picker.dart';
+import 'package:ToFinish/models/Task.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../custom_colour_scheme.dart';
 import '../functions.dart';
 
 class TimerScreen extends StatefulWidget {
@@ -81,7 +80,7 @@ class _TimerScreenState extends State<TimerScreen> {
                     Text(widget.task.description, style: TextStyle(fontSize: 20.0),),
                     SizedBox(height: MediaQuery.of(context).size.height * 0.01,),
                     // Task goal
-                    Text('Goal: finish within ' + utility.timeConverter(widget.task.time)),
+                    Text('Goal: finish within ' + timeConverter(widget.task.time)),
                     SizedBox(height: MediaQuery.of(context).size.height * 0.07,),
                     // Timer
                     BlocBuilder<TimerBloc, TimerState>(
@@ -103,11 +102,12 @@ class _TimerScreenState extends State<TimerScreen> {
                           } else if (state is TimerRunPause){
                             return createButtonRow(context, 3, state);
                           } else if (state is TimerRunComplete){
-                            print('vibrate');
                             if (!widget.task.isCompleted){
+                              print('hh');
                               _showNotification();
+                              widget.task.isCompleted = true;
+                              BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
                             }
-                            // HapticFeedback.mediumImpact();
                             return createButtonRow(context, 4, state);
                           } else {
                             return Row();
@@ -206,8 +206,7 @@ class _TimerScreenState extends State<TimerScreen> {
         children: [
           GestureDetector(
             onTap: () {
-              widget.task.isCompleted = true;
-              BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
+              
               BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
             },
             child: createButton(context, 'complete')
@@ -234,7 +233,6 @@ class _TimerScreenState extends State<TimerScreen> {
     int timeUpdated = widget.task.time;
     return Container(
       height: MediaQuery.of(context).size.height * 0.4,
-      // color: Colors.green,
       child: Column(
         children: [
           SizedBox(height: 20.0,),
@@ -281,7 +279,6 @@ class _TimerScreenState extends State<TimerScreen> {
                       Navigator.of(context).pop();
                       setState(() {
                         widget.task.time = timeUpdated;
-                        // widget.task.isCompleted = false;
                         if (widget.task.time > widget.task.timeElapsed){
                           widget.task.isCompleted = false;
                         } else {
@@ -331,7 +328,7 @@ class _TimerScreenState extends State<TimerScreen> {
             ),
           ),
           // time numbers
-          Center(child: Text(utility.timeConverter(time), style: TextStyle(fontSize: 30.0),)),
+          Center(child: Text(timeConverter(time), style: TextStyle(fontSize: 30.0),)),
         ]
       ),
     );

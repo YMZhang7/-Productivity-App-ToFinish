@@ -32,7 +32,6 @@ class _TaskTileState extends State<TaskTile> {
           child: Container(
             height: 90.0,
             decoration: BoxDecoration(
-              // color: Colors.lightGreen,
               color: Colors.white,
               borderRadius: BorderRadius.all(Radius.circular(10.0)),
               boxShadow: [BoxShadow(
