@@ -1,5 +1,6 @@
 import 'package:ToFinish/models/Timer.dart';
 import 'package:ToFinish/screens/add_new_task_screen.dart';
+import 'package:ToFinish/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wakelock/wakelock.dart';
@@ -52,7 +53,8 @@ class _AllScreensState extends State<AllScreens> {
     return BlocBuilder<ScreensBloc, ScreensState>(
       builder: (context, state){
         if (state is InTimersListScreen){
-          return TimersListScreen();
+          print('sss');
+          return HomeScreen();
         } else if (state is InTLTimerScreen){
           return BlocProvider(
             create: (context) => TimerBloc(ticker: Timer(), task: state.task),

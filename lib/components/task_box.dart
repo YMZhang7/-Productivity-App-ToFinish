@@ -19,7 +19,7 @@ class TaskBox extends StatelessWidget{
         width: 150.0,
         height: 150.0,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.colour3,
+          color: Theme.of(context).colorScheme.colour1,
           borderRadius: BorderRadius.all(Radius.circular(30.0)),
           boxShadow: [BoxShadow(
             color: Colors.grey.withOpacity(.5),
