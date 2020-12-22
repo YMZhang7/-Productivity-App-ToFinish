@@ -34,6 +34,12 @@ class _HomeScreenState extends State<HomeScreen> {
       body: BlocBuilder<TodoBloc, TodoState>(
         builder: (context, state){
           if (state is TasksLoadSuccess){
+            int countUndone = 0;
+            for (int i = 0; i < state.tasks.length; i++){
+              if (!state.tasks[i].isCompleted){
+                countUndone += 1;
+              }
+            }
             return SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -42,25 +48,56 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        SmallButton(icon: Icons.list),
+                        GestureDetector(
+                          child: SmallButton(icon: Icons.list),
+                          onTap: () => BlocProvider.of<ScreensBloc>(context).add(ListButtonPressed()),
+                        ),
                         SizedBox(width: 15.0,),
                         SmallButton(icon: Icons.grid_view),
                       ],
                     ),
-                    Text("My Tasks", style: TextStyle(fontSize: 50.0)),
-                    Text(state.tasks.length.toString() + ' tasks in total, ? tasks left'),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: Column(
+                        children: [
+                          // Text("My Tasks", style: Theme.of(context).textTheme.headline1),
+                          Text("My Task", style: Theme.of(context).textTheme.headline1),
+                          Text(state.tasks.length.toString() + ' tasks in total, '+ countUndone.toString() + ' tasks left', style: Theme.of(context).textTheme.headline2),
+                        ],
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                    ),
+                    
                     SizedBox(height: 50.0,),
                     Container(
                       height: 300.0,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            offset: Offset(2.0, 2.0),
+                            blurRadius: 8.0
+                          )
+                        ]
+                      ),
                       child: TasksList(controller: _scrollController, tasks: state.tasks, headerRequired: false)
                     ),
-                    Text('?? : ?? : ?? left until finishing'),
-                    SizedBox(
-                      height: 50.0,
-                    ),
+                    SizedBox(height: 40.0,),
                     Container(
-                      height: 160.0,
-                      // TODO: prevent the children from resizing in accordance with the parent's size
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: Column(
+                        children: [
+                          Text('?? : ?? : ?? left until finishing', style: Theme.of(context).textTheme.headline2,),
+                        ],
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                    ),
+                    // SizedBox(
+                    //   height: 5.0,
+                    // ),
+                    Container(
+                      height: 180.0,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
                         children: getTaskBoxes(state.tasks),
@@ -91,8 +128,10 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> getTaskBoxes(List<Task> tasks){
     List<Widget> res = [];
     for (int i = 0; i < tasks.length; i++){
-      res.add(TaskBox(task: tasks[i]));
-      res.add(SizedBox(width: 15.0,));
+      res.add(
+        Center(child: TaskBox(task: tasks[i]))
+      );
+      res.add(SizedBox(width: 10.0,));
     }
     return res;
   }

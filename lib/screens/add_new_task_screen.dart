@@ -63,7 +63,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: TextStyle(fontSize: 30.0),),
+                    Text(title, style: Theme.of(context).textTheme.headline1),
                     SizedBox(height: 30.0,),
                     Text('Description:', style: TextStyle(fontSize: 20.0)),
                     SizedBox(height: 10.0,),

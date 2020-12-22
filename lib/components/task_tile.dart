@@ -3,6 +3,7 @@ import 'package:ToFinish/functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/Task.dart';
+import '../custom_colour_scheme.dart';
 
 class TaskTile extends StatefulWidget {
   final Task task;
@@ -31,8 +32,9 @@ class _TaskTileState extends State<TaskTile> {
           },
           child: Container(
             height: 90.0,
+            width: MediaQuery.of(context).size.width * 0.9,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.colour4,
               borderRadius: BorderRadius.all(Radius.circular(10.0)),
               boxShadow: [BoxShadow(
                 color: Colors.grey.withOpacity(.5),

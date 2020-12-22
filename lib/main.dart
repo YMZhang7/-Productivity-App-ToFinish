@@ -28,6 +28,10 @@ class MyApp extends StatelessWidget {
             color: Colors.red,
           ),
         ),
+        textTheme: TextTheme(
+          headline1: TextStyle(fontSize: 50.0, fontWeight: FontWeight.bold, fontFamily: 'DancingScript', color: Colors.black),
+          headline2: TextStyle(fontSize: 15.0, color: Colors.black.withOpacity(0.8))
+        )
       ),
       home: MultiBlocProvider(
         providers: [
