@@ -2,6 +2,7 @@ import 'package:ToFinish/blocs/blocs.dart';
 import 'package:ToFinish/components/components.dart';
 import 'package:ToFinish/components/small_button.dart';
 import 'package:ToFinish/components/tasks_list.dart';
+import 'package:ToFinish/functions.dart';
 import 'package:ToFinish/models/Task.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   ScrollController _scrollController;
+  bool completedTasksVisible = true;
 
   @override
   void initState() {
@@ -35,9 +37,11 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, state){
           if (state is TasksLoadSuccess){
             int countUndone = 0;
+            int timeLeft = 0;
             for (int i = 0; i < state.tasks.length; i++){
               if (!state.tasks[i].isCompleted){
                 countUndone += 1;
+                timeLeft += state.tasks[i].time - state.tasks[i].timeElapsed;
               }
             }
             return SafeArea(
@@ -53,22 +57,33 @@ class _HomeScreenState extends State<HomeScreen> {
                           onTap: () => BlocProvider.of<ScreensBloc>(context).add(ListButtonPressed()),
                         ),
                         SizedBox(width: 15.0,),
-                        SmallButton(icon: Icons.grid_view),
+                        GestureDetector(
+                          child: SmallButton(icon: Icons.grid_view),
+                          onTap: () => BlocProvider.of<ScreensBloc>(context).add(GridButtonPressed()),
+                        ),
+                        SizedBox(width: 15.0,),
+                        GestureDetector(
+                          child: SmallButton(icon: completedTasksVisible ? Icons.visibility : Icons.visibility_off),
+                          onTap: (){
+                            setState(() {
+                              completedTasksVisible = !completedTasksVisible;
+                            });
+                          },
+                        )
                       ],
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width * 0.9,
                       child: Column(
                         children: [
-                          // Text("My Tasks", style: Theme.of(context).textTheme.headline1),
                           Text("My Task", style: Theme.of(context).textTheme.headline1),
+                          SizedBox(height: 20.0,),
                           Text(state.tasks.length.toString() + ' tasks in total, '+ countUndone.toString() + ' tasks left', style: Theme.of(context).textTheme.headline2),
                         ],
                         crossAxisAlignment: CrossAxisAlignment.start,
                       ),
                     ),
-                    
-                    SizedBox(height: 50.0,),
+                    SizedBox(height: 10.0,),
                     Container(
                       height: 300.0,
                       decoration: BoxDecoration(
@@ -81,14 +96,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                         ]
                       ),
-                      child: TasksList(controller: _scrollController, tasks: state.tasks, headerRequired: false)
+                      child: TasksList(controller: _scrollController, tasks: state.tasks, headerRequired: false, showCompleted: completedTasksVisible)
                     ),
                     SizedBox(height: 40.0,),
                     Container(
                       width: MediaQuery.of(context).size.width * 0.9,
                       child: Column(
                         children: [
-                          Text('?? : ?? : ?? left until finishing', style: Theme.of(context).textTheme.headline2,),
+                          Text(timeConverter(timeLeft) + ' left until finishing', style: Theme.of(context).textTheme.headline2,),
                         ],
                         crossAxisAlignment: CrossAxisAlignment.start,
                       ),
@@ -128,10 +143,14 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> getTaskBoxes(List<Task> tasks){
     List<Widget> res = [];
     for (int i = 0; i < tasks.length; i++){
-      res.add(
-        Center(child: TaskBox(task: tasks[i]))
-      );
-      res.add(SizedBox(width: 10.0,));
+      if (!completedTasksVisible && tasks[i].isCompleted){
+        continue;
+      } else {
+        res.add(
+          Center(child: TaskBox(task: tasks[i]))
+        );
+        res.add(SizedBox(width: 10.0,));
+      }
     }
     return res;
   }

@@ -8,7 +8,8 @@ class TasksList extends StatefulWidget {
   final ScrollController controller;
   final List<Task> tasks;
   final bool headerRequired;
-  const TasksList({@required this.controller, @required this.tasks, @required this.headerRequired});
+  final bool showCompleted;
+  const TasksList({@required this.controller, @required this.tasks, @required this.headerRequired, @required this.showCompleted});
 
   @override
   _TasksListState createState() => _TasksListState();
@@ -49,49 +50,57 @@ class _TasksListState extends State<TasksList> with TickerProviderStateMixin{
       );
       tiles.add(Divider(height: 5.0,));
       for (int i = 0; i < tasks.length; i++){
-        tiles.add(
-          AnimationListTile(
-            child: TaskTile(
-              task: tasks[i],
-              toDelete: (value){
-                for (int i = 0; i < tasks.length; i++){
-                  if (tasks[i].id == value){
-                    setState(() {
-                      tasks.removeAt(i);
-                    });
-                    break;
+        if (!widget.showCompleted && tasks[i].isCompleted){
+          continue;
+        } else {
+          tiles.add(
+            AnimationListTile(
+              child: TaskTile(
+                task: tasks[i],
+                toDelete: (value){
+                  for (int i = 0; i < tasks.length; i++){
+                    if (tasks[i].id == value){
+                      setState(() {
+                        tasks.removeAt(i);
+                      });
+                      break;
+                    }
                   }
-                }
-              },
-            ), 
-            index: i + 2, 
-            total: tasks.length + 1, 
-          )
-        );
-        tiles.add(SizedBox(height: 5.0,));
+                },
+              ), 
+              index: i + 2, 
+              total: tasks.length + 1, 
+            )
+          );
+          tiles.add(SizedBox(height: 5.0,));
+        }
       }
     } else {
       for (int i = 0; i < tasks.length; i++){
-        tiles.add(
-          AnimationListTile(
-            child: TaskTile(
-              task: tasks[i],
-              toDelete: (value){
-                for (int i = 0; i < tasks.length; i++){
-                  if (tasks[i].id == value){
-                    setState(() {
-                      tasks.removeAt(i);
-                    });
-                    break;
+        if (!widget.showCompleted && tasks[i].isCompleted){
+          continue;
+        } else {
+          tiles.add(
+            AnimationListTile(
+              child: TaskTile(
+                task: tasks[i],
+                toDelete: (value){
+                  for (int i = 0; i < tasks.length; i++){
+                    if (tasks[i].id == value){
+                      setState(() {
+                        tasks.removeAt(i);
+                      });
+                      break;
+                    }
                   }
-                }
-              },
-            ), 
-            index: i + 1, 
-            total: tasks.length,
-          )
-        );
-        tiles.add(SizedBox(height: 5.0,));
+                },
+              ), 
+              index: i + 1, 
+              total: tasks.length,
+            )
+          );
+          tiles.add(SizedBox(height: 5.0,));
+        }
       }
     }
     return tiles;

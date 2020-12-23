@@ -1,3 +1,4 @@
+import 'package:ToFinish/components/small_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,6 +13,7 @@ class ListScreen extends StatefulWidget {
 
 class _ListScreenState extends State<ListScreen> {
   ScrollController _scrollController;
+  bool completedTasksVisible = true;
 
   @override
   void initState() {
@@ -43,28 +45,79 @@ class _ListScreenState extends State<ListScreen> {
             ),
           );
         } else if (state is TasksLoadSuccess){
+          int countUndone = 0;
+          // int timeLeft = 0;
+          for (int i = 0; i < state.tasks.length; i++){
+            if (!state.tasks[i].isCompleted){
+              countUndone += 1;
+              // timeLeft += state.tasks[i].time - state.tasks[i].timeElapsed;
+            }
+          }
           return Scaffold(
-            appBar: AppBar(
-              title: Text("To-Do", style: TextStyle(color: Colors.black),),
-              backgroundColor: Colors.white,
-              actions: [
-                IconButton(
-                  icon: Icon(Icons.grid_view, color: Colors.black,), 
-                  onPressed: () => BlocProvider.of<ScreensBloc>(context).add(GridButtonPressed()),
-                )
-              ],
-              elevation: 0.0,
-            ),
-            body: Container(
-              padding: EdgeInsets.all(10.0),
-              child: TasksList(controller: _scrollController, tasks: state.tasks, headerRequired: false,),
+            body: SafeArea(
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        GestureDetector(
+                          child: SmallButton(icon: Icons.home),
+                          onTap: () => BlocProvider.of<ScreensBloc>(context).add(GridButtonPressed()),
+                        ),
+                        SizedBox(width: 15.0,),
+                        GestureDetector(
+                          child: SmallButton(icon: Icons.grid_view),
+                          onTap: () => BlocProvider.of<ScreensBloc>(context).add(GridButtonPressed()),
+                        ),
+                        SizedBox(width: 15.0,),
+                        GestureDetector(
+                          child: SmallButton(icon: completedTasksVisible ? Icons.visibility : Icons.visibility_off),
+                          onTap: (){
+                            setState(() {
+                              completedTasksVisible = !completedTasksVisible;
+                            });
+                          },
+                        )
+                      ],
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: Column(
+                        children: [
+                          Text("My Task", style: Theme.of(context).textTheme.headline1),
+                          SizedBox(height: 20.0,),
+                          Text(state.tasks.length.toString() + ' tasks in total, '+ countUndone.toString() + ' tasks left', style: Theme.of(context).textTheme.headline2),
+                        ],
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                    ),
+                    SizedBox(height: 10.0,),
+                    Container(
+                      height: 300.0,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            offset: Offset(2.0, 2.0),
+                            blurRadius: 8.0
+                          )
+                        ]
+                      ),
+                      child: TasksList(controller: _scrollController, tasks: state.tasks, headerRequired: false, showCompleted: completedTasksVisible)
+                    ),
+                  ],
+                ),
+              ),
             ),
             floatingActionButton: FloatingActionButton(
               onPressed: (){
                 BlocProvider.of<ScreensBloc>(context).add(AddButtonPressed());
               }, 
-              child: Icon(Icons.add),
-              backgroundColor: Theme.of(context).colorScheme.colour4,
+              child: Icon(Icons.add, size: 30.0),
+              backgroundColor: Theme.of(context).colorScheme.colour2,
             )
           );
         } else {
