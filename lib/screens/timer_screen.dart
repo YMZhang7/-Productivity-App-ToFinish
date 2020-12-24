@@ -1,3 +1,4 @@
+import 'package:ToFinish/components/small_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -96,19 +97,28 @@ class _TimerScreenState extends State<TimerScreen> {
                       child: BlocBuilder<TimerBloc, TimerState>(
                         builder: (context, state){
                           if (state is TimerInitial){
-                            return createButtonRow(context, 1, state);
+                            return Container(
+                              child: createButtonRow(context, 1, state),
+                              width: MediaQuery.of(context).size.width * 0.7,
+                            );
                           } else if (state is TimerRunInProgress){
-                            return createButtonRow(context, 2, state);
+                            return Container(
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              child: createButtonRow(context, 2, state));
                           } else if (state is TimerRunPause){
-                            return createButtonRow(context, 3, state);
+                            return Container(
+                              child: createButtonRow(context, 3, state),
+                              width: MediaQuery.of(context).size.width * 0.7,
+                            );
                           } else if (state is TimerRunComplete){
                             if (!widget.task.isCompleted){
-                              print('hh');
                               _showNotification();
                               widget.task.isCompleted = true;
                               BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
                             }
-                            return createButtonRow(context, 4, state);
+                            return Container(
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              child: createButtonRow(context, 4, state));
                           } else {
                             return Row();
                           }
@@ -141,16 +151,18 @@ class _TimerScreenState extends State<TimerScreen> {
   Widget createButtonRow(BuildContext context, int state, TimerState timerState){
     if (state == 1){
       // initial state
-      String text = "start";
+      String text = "START";
       if (widget.task.timeElapsed != 0){
-        text = "continue";
+        text = "CONTINUE";
       }
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           GestureDetector(
             onTap: () => BlocProvider.of<TimerBloc>(context).add(TimerStarted(duration: widget.task.time - widget.task.timeElapsed)),
-            child: createButton(context, text)
+            // child: createButton(context, text)
+            // child: BigButton(label: text),
+            child: SmallButton(icon: Icons.play_arrow),
           )
         ],
       );
@@ -161,12 +173,16 @@ class _TimerScreenState extends State<TimerScreen> {
         children: [
           GestureDetector(
             onTap: () => BlocProvider.of<TimerBloc>(context).add(TimerPaused()),
-            child: createButton(context, 'pause')
+            // child: createButton(context, 'pause')
+            // child: BigButton(label: 'PAUSE')
+            child: SmallButton(icon: Icons.pause,),
           ),
           SizedBox(height: 20.0,),
           GestureDetector(
             onTap: () => BlocProvider.of<TimerBloc>(context).add(TimerReset()),
-            child: createButton(context, 'reset')
+            // child: createButton(context, 'reset')
+            // child: BigButton(label: 'RESET',),
+            child: SmallButton(icon: Icons.replay,),
           ),
         ],
       );
@@ -179,7 +195,9 @@ class _TimerScreenState extends State<TimerScreen> {
           children: [
             GestureDetector(
               onTap: () => BlocProvider.of<TimerBloc>(context).add(TimerResumed()),
-              child: createButton(context, 'resume')
+              // child: createButton(context, 'resume')
+              // child: BigButton(label: 'RESUME',),
+              child: SmallButton(icon: Icons.play_arrow,),
             ),
             GestureDetector(
               onTap: () {
@@ -190,11 +208,15 @@ class _TimerScreenState extends State<TimerScreen> {
                   }
                 );
               },
-              child: createButton(context, 'add time')
+              // child: createButton(context, 'add time')
+              // child: BigButton(label: 'ADD TIME',),
+              child: SmallButton(icon: Icons.add,),
             ),
             GestureDetector(
               onTap: () => BlocProvider.of<TimerBloc>(context).add(TimerReset()),
-              child: createButton(context, 'reset')
+              // child: createButton(context, 'reset')
+              // child: BigButton(label: 'RESET',),
+              child: SmallButton(icon: Icons.replay,),
             ),
           ],
         ),
@@ -209,7 +231,9 @@ class _TimerScreenState extends State<TimerScreen> {
               
               BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
             },
-            child: createButton(context, 'complete')
+            // child: createButton(context, 'complete')
+            // child: BigButton(label: 'COMPLETE',),
+            child: SmallButton(icon: Icons.check,),
           ),
           GestureDetector(
             onTap: () {
@@ -220,7 +244,9 @@ class _TimerScreenState extends State<TimerScreen> {
                 }
               );
             },
-            child: createButton(context, 'add time')
+            // child: createButton(context, 'add time')
+            // child: BigButton(label: 'ADD TIME',),
+            child: SmallButton(icon: Icons.add,),
           ),
         ],
       );
@@ -322,7 +348,7 @@ class _TimerScreenState extends State<TimerScreen> {
             width: MediaQuery.of(context).size.width * 0.8,
             child: CircularProgressIndicator(
               strokeWidth: 30.0,
-              value: (totalTime-time)/totalTime, // need to be changed
+              value: totalTime == 0 ? 0 : (totalTime-time)/totalTime, // need to be changed
               backgroundColor: Theme.of(context).colorScheme.colour3,
               valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
             ),

@@ -18,12 +18,6 @@ class TaskBox extends StatelessWidget{
       child: Container(
         width: 150.0,
         height: 150.0,
-        // constraints: BoxConstraints(
-        //   maxHeight: 150.0, 
-        //   maxWidth: 150.0, 
-        //   minHeight: 150.0, 
-        //   minWidth: 150.0
-        // ),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.colour1,
           borderRadius: BorderRadius.all(Radius.circular(30.0)),

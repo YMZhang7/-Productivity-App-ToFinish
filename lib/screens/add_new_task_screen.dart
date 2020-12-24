@@ -1,10 +1,10 @@
+import 'package:ToFinish/components/big_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ToFinish/blocs/blocs.dart';
 import 'package:ToFinish/functions.dart';
 import 'package:ToFinish/models/Task.dart';
 import 'package:ToFinish/components/components.dart';
-import '../custom_colour_scheme.dart';
 
 class AddNewTaskScreen extends StatefulWidget{
   final Task currentTask;
@@ -18,7 +18,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
   int timeRequired = 0;
   bool isEmpty = false;
   String title = "New Task";
-  String buttonLabel = "Add";
+  String buttonLabel = "ADD";
   TextEditingController _textEditingController = TextEditingController();
 
   @override
@@ -26,7 +26,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     if (widget.currentTask != null){
       _textEditingController.text = widget.currentTask.description;
       title = "Edit Task";
-      buttonLabel = "Update";
+      buttonLabel = "UPDATE";
     }
     super.initState();
   }
@@ -101,15 +101,16 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                 SizedBox(height: 30.0,),
                 // Add Button
                 GestureDetector(
-                  child: Container(
-                    width: 100.0,
-                    height: 50.0,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.colour3,
-                      borderRadius: BorderRadius.all(Radius.circular(15.0))
-                    ),
-                    child: Center(child: Text(buttonLabel, style: TextStyle(fontSize: 18.0),)),
-                  ),
+                  // child: Container(
+                  //   width: 100.0,
+                  //   height: 50.0,
+                  //   decoration: BoxDecoration(
+                  //     color: Theme.of(context).colorScheme.colour3,
+                  //     borderRadius: BorderRadius.all(Radius.circular(15.0))
+                  //   ),
+                  //   child: Center(child: Text(buttonLabel, style: TextStyle(fontSize: 18.0),)),
+                  // ),
+                  child: BigButton(label: buttonLabel),
                   onTap: (){
                     if (_textEditingController.text.length == 0){
                       setState(() {
@@ -127,26 +128,34 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                         widget.currentTask.description = description;
                         if (timeRequired > widget.currentTask.timeElapsed){
                           widget.currentTask.time = timeRequired;
+                          BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.currentTask));
+                          BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
                         } else {
-                          return AlertDialog(
-                            title: Text('Warning'),
-                            content: SingleChildScrollView(
-                              child: ListBody(
-                                children: [
-                                  Text('Your goal cannot be less than the time elapsed (' + timeConverter(widget.currentTask.timeElapsed) + ')')
+                          print('wwwww');
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context){
+                              return AlertDialog(
+                                title: Text('Warning'),
+                                content: SingleChildScrollView(
+                                  child: ListBody(
+                                    children: [
+                                      Text('Your goal cannot be less than the time already elapsed (' + timeConverter(widget.currentTask.timeElapsed) + ')')
+                                    ],
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    child: Text('Okay'), 
+                                    onPressed: () => Navigator.of(context).pop()
+                                  )
                                 ],
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                child: Text('Okay'), 
-                                onPressed: () => Navigator.of(context).pop()
-                              )
-                            ],
+                              );
+                            }
                           );
+                            
                         }
-                        BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.currentTask));
-                        BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
+                        
                       }
                     }
                   },

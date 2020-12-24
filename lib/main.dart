@@ -57,8 +57,9 @@ class _AllScreensState extends State<AllScreens> {
     return BlocBuilder<ScreensBloc, ScreensState>(
       builder: (context, state){
         if (state is InTimersListScreen){
-          print('sss');
           return HomeScreen();
+        } else if (state is InTimersMatrixScreen){
+          return TimersMatrixScreen();
         } else if (state is InTLTimerScreen){
           return BlocProvider(
             create: (context) => TimerBloc(ticker: Timer(), task: state.task),
@@ -71,7 +72,7 @@ class _AllScreensState extends State<AllScreens> {
           );
         } else if (state is InListScreen){
           return ListScreen();
-        } else if (state is InTLAddNewTaskScreen || state is InLAddNewTaskScreen){
+        } else if (state is InTLAddNewTaskScreen || state is InLAddNewTaskScreen || state is InTMAddNewTaskScreen){
           return AddNewTaskScreen();
         } else if (state is InTLEditNewTaskScreen){
           return AddNewTaskScreen(currentTask: state.task,);

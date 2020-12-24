@@ -30,23 +30,26 @@ class _TaskTileState extends State<TaskTile> {
               }
             });
           },
-          child: Container(
-            height: 90.0,
-            width: MediaQuery.of(context).size.width * 0.9,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.colour4,
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              boxShadow: [BoxShadow(
-                color: Colors.grey.withOpacity(.5),
-                blurRadius: 10.0,
-                spreadRadius: 0.0,
-                offset: Offset(
-                  5.0, // Move to right 10  horizontally
-                  5.0, // Move to bottom 10 Vertically
-                ),
-              )],
+          child: GestureDetector(
+            onTap: () => BlocProvider.of<ScreensBloc>(context).add(TaskBoxPressed(task: widget.task)),
+            child: Container(
+              height: 90.0,
+              width: MediaQuery.of(context).size.width * 0.9,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.colour4,
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                boxShadow: [BoxShadow(
+                  color: Colors.grey.withOpacity(.5),
+                  blurRadius: 10.0,
+                  spreadRadius: 0.0,
+                  offset: Offset(
+                    5.0, // Move to right 10  horizontally
+                    5.0, // Move to bottom 10 Vertically
+                  ),
+                )],
+              ),
+              child: checkBoxTile(),
             ),
-            child: checkBoxTile(),
           ),
           secondaryBackground: Container(
             color: Colors.red,

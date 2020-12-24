@@ -64,7 +64,7 @@ class _ListScreenState extends State<ListScreen> {
                       children: [
                         GestureDetector(
                           child: SmallButton(icon: Icons.home),
-                          onTap: () => BlocProvider.of<ScreensBloc>(context).add(GridButtonPressed()),
+                          onTap: () => BlocProvider.of<ScreensBloc>(context).add(HomeButtonPressed()),
                         ),
                         SizedBox(width: 15.0,),
                         GestureDetector(
@@ -94,18 +94,7 @@ class _ListScreenState extends State<ListScreen> {
                       ),
                     ),
                     SizedBox(height: 10.0,),
-                    Container(
-                      height: 300.0,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.1),
-                            offset: Offset(2.0, 2.0),
-                            blurRadius: 8.0
-                          )
-                        ]
-                      ),
+                    Flexible(
                       child: TasksList(controller: _scrollController, tasks: state.tasks, headerRequired: false, showCompleted: completedTasksVisible)
                     ),
                   ],

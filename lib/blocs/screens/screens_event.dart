@@ -14,6 +14,8 @@ class ListButtonPressed extends ScreensEvent {}
 
 class GridButtonPressed extends ScreensEvent {}
 
+class HomeButtonPressed extends ScreensEvent {}
+
 class ForwardButtonPressed extends ScreensEvent {
   Task task;
   ForwardButtonPressed({@required this.task});

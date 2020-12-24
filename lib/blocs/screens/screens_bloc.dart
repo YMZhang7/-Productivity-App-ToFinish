@@ -21,8 +21,10 @@ class ScreensBloc extends Bloc<ScreensEvent, ScreensState> {
       yield InTLTimerScreen(task: event.task);
     } else if (event is ListButtonPressed){
       yield InListScreen();
-    } else if (event is GridButtonPressed){
+    } else if (event is HomeButtonPressed){
       yield InTimersListScreen();
+    } else if(event is GridButtonPressed){
+      yield InTimersMatrixScreen();
     } else if (event is ForwardButtonPressed){
       yield InLTimerScreen(task: event.task);
     } else if (event is BackButtonPressed){
@@ -38,12 +40,16 @@ class ScreensBloc extends Bloc<ScreensEvent, ScreensState> {
         yield InTimersListScreen();
       } else if (state is InLEditNewTaskScreen){
         yield InListScreen();
+      } else if (state is InTMAddNewTaskScreen){
+        yield InTimersMatrixScreen();
       }
     } else if (event is AddButtonPressed){
       if (state is InTimersListScreen){
         yield InTLAddNewTaskScreen();
       } else if (state is InListScreen){
         yield InLAddNewTaskScreen();
+      } else if (state is InTimersMatrixScreen){
+        yield InTMAddNewTaskScreen();
       }
     } else if (event is EditTask){
       if (state is InTimersListScreen){

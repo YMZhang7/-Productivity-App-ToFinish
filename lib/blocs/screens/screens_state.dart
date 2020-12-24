@@ -12,6 +12,8 @@ abstract class ScreensState extends Equatable{
 
 class InTimersListScreen extends ScreensState {}
 
+class InTimersMatrixScreen extends ScreensState{}
+
 class InTLTimerScreen extends ScreensState {
   final Task task;
   const InTLTimerScreen({@required this.task}):super(task: task);
@@ -31,6 +33,8 @@ class InListScreen extends ScreensState {}
 class InTLAddNewTaskScreen extends ScreensState {}
 
 class InLAddNewTaskScreen extends ScreensState {}
+
+class InTMAddNewTaskScreen extends ScreensState {}
 
 class InTLEditNewTaskScreen extends ScreensState{
   final Task task;
