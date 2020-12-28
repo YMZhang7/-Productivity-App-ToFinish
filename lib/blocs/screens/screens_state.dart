@@ -45,7 +45,7 @@ class InTLEditNewTaskScreen extends ScreensState{
 
 class InLEditNewTaskScreen extends ScreensState {
   final Task task;
-  const InLEditNewTaskScreen({@required this.task}):super(task: task);
+  const InLEditNewTaskScreen({@required this.task}) : super(task: task);
   @override
   List<Object> get props => [this.task];
 }

@@ -32,7 +32,6 @@ class TaskBox extends StatelessWidget{
           )],
         ),
         child: Stack(
-          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Center(child: Text(utility.timeConverter(task.time - task.timeElapsed), style: TextStyle(fontSize: 20.0),)),
             LayoutBuilder(
