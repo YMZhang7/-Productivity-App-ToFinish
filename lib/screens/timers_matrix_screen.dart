@@ -94,7 +94,7 @@ class _TimersMatrixScreenState extends State<TimersMatrixScreen> {
                     ),
                     SizedBox(height: 10.0,),
                     Flexible(
-                      child: TasksMatrix(tasks: state.tasks, showCompleted: completedTasksVisible)
+                      child: TasksMatrix(showCompleted: completedTasksVisible)
                     ),
                   ],
                 ),

@@ -44,7 +44,7 @@ class _TimersListScreenState extends State<TimersListScreen> {
                 if (state is TasksLoadSuccess){
                   return Container(
                     color: Colors.white,
-                    child: TasksMatrix(tasks: state.tasks, showCompleted: completedTasksVisible,),
+                    child: TasksMatrix(showCompleted: completedTasksVisible,),
                   );
                 } else if (state is TasksLoadInProgress){
                   BlocProvider.of<TodoBloc>(context).add(LoadTasks());
