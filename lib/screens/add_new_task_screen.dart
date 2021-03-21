@@ -5,6 +5,7 @@ import 'package:ToFinish/blocs/blocs.dart';
 import 'package:ToFinish/functions.dart';
 import 'package:ToFinish/models/Task.dart';
 import 'package:ToFinish/components/components.dart';
+import '../custom_colour_scheme.dart';
 
 class AddNewTaskScreen extends StatefulWidget{
   final Task currentTask;
@@ -18,8 +19,10 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
   int timeRequired = 0;
   bool isEmpty = false;
   String title = "New Task";
-  String buttonLabel = "ADD";
+  String buttonLabel = "CREATE";
   TextEditingController _textEditingController = TextEditingController();
+  bool multipleTimers = false;
+  List<Task> subtimers = [];
 
   @override
   void initState() {
@@ -27,6 +30,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
       _textEditingController.text = widget.currentTask.description;
       title = "Edit Task";
       buttonLabel = "UPDATE";
+      timeRequired = widget.currentTask.time;
     }
     super.initState();
   }
@@ -42,7 +46,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     return WillPopScope(
       onWillPop: (){
         // back key pressed
-        BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
+        Navigator.pop(context);
         return null;
       },
       child: Scaffold(
@@ -51,7 +55,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
           backgroundColor: Colors.white,
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios, color: Colors.black), 
-            onPressed: () => BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed()),
+            onPressed: () => Navigator.pop(context),
           ),
           elevation: 0.0,
         ),
@@ -90,26 +94,29 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                       },
                     ),
                     SizedBox(height: 30.0,),
-                    Text('How long does it take?', style: TextStyle(fontSize: 20.0)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Divide into multiple timers?', style: TextStyle(fontSize: 20.0)),
+                        Checkbox(
+                          value: multipleTimers, 
+                          onChanged: (change){
+                            setState(() {
+                              multipleTimers = change;
+                            });
+                          }
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20.0,),
+                    multipleTimers ? multiTimerWidget() : timeSpecificationWidget(),
+                    // Text('How long does it take?', style: TextStyle(fontSize: 20.0)),
+
                   ],
                 ),
                 SizedBox(height: 30.0,),
-                Text('Hour|Minute|Second', style: TextStyle(fontSize: 20.0),),
-                SizedBox(height: 20.0,),
-                // Time Picker
-                TimePicker(onTimeSelectedChange: (value) => timeRequired = value, task: widget.currentTask,),
-                SizedBox(height: 30.0,),
                 // Add Button
                 GestureDetector(
-                  // child: Container(
-                  //   width: 100.0,
-                  //   height: 50.0,
-                  //   decoration: BoxDecoration(
-                  //     color: Theme.of(context).colorScheme.colour3,
-                  //     borderRadius: BorderRadius.all(Radius.circular(15.0))
-                  //   ),
-                  //   child: Center(child: Text(buttonLabel, style: TextStyle(fontSize: 18.0),)),
-                  // ),
                   child: BigButton(label: buttonLabel),
                   onTap: (){
                     if (_textEditingController.text.length == 0){
@@ -123,15 +130,14 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                       if (widget.currentTask == null){
                         Task newTask = new Task(dateTime: t, description: description, time: timeRequired, timeElapsed: 0, isCompleted: false);
                         BlocProvider.of<TodoBloc>(context).add(AddTask(task: newTask));
-                        BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
+                        Navigator.pop(context);
                       } else {
                         widget.currentTask.description = description;
                         if (timeRequired > widget.currentTask.timeElapsed){
                           widget.currentTask.time = timeRequired;
                           BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.currentTask));
-                          BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
+                          Navigator.pop(context);
                         } else {
-                          print('wwwww');
                           showDialog(
                             context: context,
                             builder: (BuildContext context){
@@ -167,4 +173,73 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
       ),
     );
   }
+
+  Widget timeSpecificationWidget(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('How long does it take?', style: TextStyle(fontSize: 20.0)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(timeConverter(timeRequired), style: TextStyle(fontSize: 17.0),),
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.colour2),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)))
+              ),
+              onPressed: (){
+                showDialog(
+                  context: context, 
+                  builder: (BuildContext context){
+                    int newTime = 0;
+                    return AlertDialog(
+                      title: Text('Time'),
+                      content: Container(
+                        height: 250.0,
+                        child: Column(
+                          children: [
+                            Text('Hour | Minute | Second', style: TextStyle(fontSize: 18.0),),
+                            TimePicker(
+                              onTimeSelectedChange: (time){
+                                newTime = time;
+                              }),
+                          ],
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: (){
+                            Navigator.of(context).pop();
+                          }, 
+                          child: Text('Cancel')
+                        ),
+                        TextButton(
+                          onPressed: (){
+                            setState(() {
+                              timeRequired = newTime;
+                            });
+                            Navigator.of(context).pop();
+                          }, 
+                          child: Text('OK')
+                        ),
+                      ],
+                    );
+                  }
+                );
+              }, 
+              child: Text('Change')
+            )
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget multiTimerWidget(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+    );
+  }
+
 }

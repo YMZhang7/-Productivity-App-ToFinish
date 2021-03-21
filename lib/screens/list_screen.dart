@@ -94,9 +94,9 @@ class _ListScreenState extends State<ListScreen> {
                       ),
                     ),
                     SizedBox(height: 10.0,),
-                    Flexible(
-                      child: TasksList(controller: _scrollController, tasks: state.tasks, headerRequired: false, showCompleted: completedTasksVisible)
-                    ),
+                    // Flexible(
+                    //   // child: TasksList(controller: _scrollController, tasks: state.tasks, headerRequired: false, showCompleted: completedTasksVisible)
+                    // ),
                   ],
                 ),
               ),

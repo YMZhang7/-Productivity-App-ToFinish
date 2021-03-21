@@ -1,5 +1,7 @@
 import 'package:ToFinish/blocs/blocs.dart';
 import 'package:ToFinish/models/Task.dart';
+import 'package:ToFinish/models/Timer.dart';
+import 'package:ToFinish/screens/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../custom_colour_scheme.dart';
@@ -13,7 +15,17 @@ class TaskBox extends StatelessWidget{
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        BlocProvider.of<ScreensBloc>(context).add(TaskBoxPressed(task: task));
+        Navigator.push(
+          context, 
+          MaterialPageRoute(builder: (taskboxContext) => 
+            BlocProvider.value(
+              value: context.bloc<TodoBloc>(),
+              child: BlocProvider(
+                create: (context) => TimerBloc(ticker: Timer(), task: task),
+                child: TimersScreen(task: task)),
+              ),
+            )
+        );
       },
       child: Container(
         width: 150.0,

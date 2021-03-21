@@ -1,5 +1,6 @@
 import 'package:ToFinish/blocs/blocs.dart';
 import 'package:ToFinish/functions.dart';
+import 'package:ToFinish/screens/add_new_task_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/Task.dart';
@@ -16,63 +17,69 @@ class TaskTile extends StatefulWidget {
 class _TaskTileState extends State<TaskTile> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Dismissible(
-          key: Key(widget.task.id.toString()),
-          onDismissed: (direction){
-            setState(() {
-              if (direction == DismissDirection.startToEnd){
-                BlocProvider.of<ScreensBloc>(context).add(EditTask(task: widget.task));
-              } else {
-                widget.toDelete(widget.task.id);
-                BlocProvider.of<TodoBloc>(context).add(DeleteTask(widget.task));
+    return Dismissible(
+      key: Key(widget.task.id.toString()),
+      confirmDismiss: (direction) async{
+        if (direction == DismissDirection.startToEnd){
+          Navigator.push(
+            context, 
+            MaterialPageRoute(
+              builder: (contextHomescreen){
+                return BlocProvider.value(
+                  value: context.bloc<TodoBloc>(),
+                  child: AddNewTaskScreen(currentTask: widget.task,),
+                );
               }
-            });
-          },
-          child: GestureDetector(
-            onTap: () => BlocProvider.of<ScreensBloc>(context).add(TaskBoxPressed(task: widget.task)),
-            child: Container(
-              height: 90.0,
-              width: MediaQuery.of(context).size.width * 0.9,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.colour4,
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                boxShadow: [BoxShadow(
-                  color: Colors.grey.withOpacity(.5),
-                  blurRadius: 10.0,
-                  spreadRadius: 0.0,
-                  offset: Offset(
-                    5.0, // Move to right 10  horizontally
-                    5.0, // Move to bottom 10 Vertically
-                  ),
-                )],
-              ),
-              child: checkBoxTile(),
-            ),
+            )
+          );
+          return false;
+        } else {
+          widget.toDelete(widget.task.id);
+          BlocProvider.of<TodoBloc>(context).add(DeleteTask(widget.task));
+          return true;
+        }
+      },
+      child: GestureDetector(
+        onTap: () => BlocProvider.of<ScreensBloc>(context).add(TaskBoxPressed(task: widget.task)),
+        child: Container(
+          height: 90.0,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.colour4,
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(.5),
+                blurRadius: 10.0,
+                spreadRadius: 0.0,
+                offset: Offset(
+                  5.0, // Move to right 10  horizontally
+                  5.0, // Move to bottom 10 Vertically
+                ),
+            )],
           ),
-          secondaryBackground: Container(
-            color: Colors.red,
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Icon(Icons.delete_outline, color: Colors.white,),
-              ),
-            ),
-          ),
-          background: Container(
-            color: Colors.green,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Icon(Icons.edit, color: Colors.white,),
-              ),
-            ),
+          child: checkBoxTile(),
+        ),
+      ),
+      secondaryBackground: Container(
+        color: Colors.red,
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Icon(Icons.delete_outline, color: Colors.white,),
           ),
         ),
-      ],
+      ),
+      background: Container(
+        color: Colors.green,
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Icon(Icons.edit, color: Colors.white,),
+          ),
+        ),
+      ),
     );
   }
 
@@ -117,7 +124,7 @@ class _TaskTileState extends State<TaskTile> {
             },
           ),
         ),
-        Flexible(
+        Expanded(
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0, top: 5.0, bottom: 5.0),
             child: Column(

@@ -28,16 +28,26 @@ class DBHelper {
   initDb() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, DB_NAME);
+    print(path);
     var db = await openDatabase(
       path,
       version: 1,
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
     return db;
   }
 
   _onCreate(Database db, int version) async {
+    print("database version: " + version.toString());
     await db.execute("CREATE TABLE $TABLE ($ID INTEGER PRIMARY KEY, $DESCRIPTION TEXT, $TIME INTEGER, $TIME_ELAPSED INTEGER, $DATE_TIME TEXT, $IS_COMPLETED INTEGER)");
+  }
+
+  _onUpgrade(Database db, int oldVersion, int newVersion){
+    print('database upgrade....');
+    print("database old version: " + oldVersion.toString());
+    print("database new version: " + newVersion.toString());
+    
   }
 
   Future<Task> addTodo (Task task) async {
