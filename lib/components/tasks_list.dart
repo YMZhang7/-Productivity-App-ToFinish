@@ -9,7 +9,8 @@ import '../custom_colour_scheme.dart';
 class TasksList extends StatefulWidget {
   final List<Task> tasks;
   final bool showCompleted;
-  const TasksList({@required this.tasks, @required this.showCompleted});
+  final String tag;
+  const TasksList({@required this.tasks, @required this.showCompleted, @required this.tag});
 
   @override
   _TasksListState createState() => _TasksListState();
@@ -28,6 +29,7 @@ Widget build(BuildContext context) {
   List<Widget> getTiles(BuildContext context, List<Task> tasks){
     List<Widget> tiles = [];
     for (int i = 0; i < tasks.length; i++){
+      if (widget.tag == 'all' || widget.tag == tasks[i].tag){
         if (!widget.showCompleted && tasks[i].isCompleted){
           continue;
         } else {
@@ -53,6 +55,7 @@ Widget build(BuildContext context) {
           tiles.add(SizedBox(height: 5.0,));
         }
       }
+    }
     return tiles;
   }
 }

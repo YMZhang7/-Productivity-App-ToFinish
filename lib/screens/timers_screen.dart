@@ -11,8 +11,9 @@ import '../custom_colour_scheme.dart';
 import '../functions.dart';
 
 class TimersScreen extends StatefulWidget {
+  final BuildContext todoBlocContext;
   final Task task;
-  const TimersScreen({@required this.task});
+  const TimersScreen({@required this.todoBlocContext, @required this.task});
 
   @override
   _TimersScreenState createState() => _TimersScreenState();
@@ -37,19 +38,25 @@ class _TimersScreenState extends State<TimersScreen> {
   }
 
   Future onSelectNotification(String payload) async{
-    return TimersScreen(task: widget.task,);
+    return TimersScreen(task: widget.task, todoBlocContext: widget.todoBlocContext,);
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: (){
-        // back key pressed
-        // BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
         Navigator.pop(context);
         return null;
       },
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: Colors.black), 
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
         body: BlocBuilder<TimerBloc, TimerState>(
           builder: (context, state){
             if (widget.task.timeElapsed == widget.task.time){
@@ -63,21 +70,6 @@ class _TimersScreenState extends State<TimersScreen> {
                 child: Column(
                   children: [
                     // Return button
-                    SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10.0),
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_back_ios, color: Colors.black,), 
-                            onPressed: (){
-                              // BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
-                              Navigator.pop(context);
-                            }
-                          ),
-                        ),
-                      ),
-                    ),
                     SizedBox(height: MediaQuery.of(context).size.height * 0.04,),
                     // Task Description
                     Text(widget.task.description, style: TextStyle(fontSize: 20.0),),
@@ -89,7 +81,7 @@ class _TimersScreenState extends State<TimersScreen> {
                     BlocBuilder<TimerBloc, TimerState>(
                       builder: (context, state) {
                         widget.task.timeElapsed = widget.task.time - state.duration;
-                        BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
+                        BlocProvider.of<TodoBloc>(widget.todoBlocContext).add(UpdateTask(task: widget.task));
                         return createTimer(context, state.duration, widget.task.time);
                       }
                     ),
@@ -116,7 +108,7 @@ class _TimersScreenState extends State<TimersScreen> {
                             if (!widget.task.isCompleted){
                               _showNotification();
                               widget.task.isCompleted = true;
-                              BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
+                              BlocProvider.of<TodoBloc>(widget.todoBlocContext).add(UpdateTask(task: widget.task));
                             }
                             return Container(
                               width: MediaQuery.of(context).size.width * 0.7,
@@ -218,8 +210,7 @@ class _TimersScreenState extends State<TimersScreen> {
         children: [
           GestureDetector(
             onTap: () {
-              
-              BlocProvider.of<ScreensBloc>(context).add(BackButtonPressed());
+              Navigator.pop(context);
             },
             child: SmallButton(icon: Icons.check,),
           ),
@@ -297,7 +288,7 @@ class _TimersScreenState extends State<TimersScreen> {
                           widget.task.isCompleted = true;
                         }
                       });
-                      BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.task));
+                      BlocProvider.of<TodoBloc>(widget.todoBlocContext).add(UpdateTask(task: widget.task));
                       BlocProvider.of<TimerBloc>(context).add(TimerReset(task: widget.task));
                     } 
                   }

@@ -1,5 +1,6 @@
 import 'package:ToFinish/models/Task.dart';
 import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
 
 abstract class TodoState extends Equatable {
   const TodoState();

@@ -7,7 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class TimersRepresentationBody extends StatelessWidget {
   final bool showList;
   final bool showCompleted;
-  const TimersRepresentationBody({@required this.showList, @required this.showCompleted});
+  final String tag;
+  const TimersRepresentationBody({@required this.showList, @required this.showCompleted, @required this.tag});
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +16,7 @@ class TimersRepresentationBody extends StatelessWidget {
       builder: (context, state){
         if (state is TasksLoadInProgress){
           BlocProvider.of<TodoBloc>(context).add(LoadTasks());
+          print('Task load in progress');
           return CircularProgressIndicator();
         } else if (state is TasksLoadFailure){
           return Center(
@@ -22,9 +24,9 @@ class TimersRepresentationBody extends StatelessWidget {
           );
         } else if (state is TasksLoadSuccess){
           if (showList){
-            return TasksList(tasks: state.tasks, showCompleted: this.showCompleted);
+            return TasksList(tasks: state.tasks, showCompleted: this.showCompleted, tag: tag);
           } else {
-            return TasksMatrix(tasks: state.tasks, showCompleted: this.showCompleted);
+            return TasksMatrix(tasks: state.tasks, showCompleted: this.showCompleted, tag: tag);
           }
         } else {
           return Container(width: 0.0, height: 0.0,);

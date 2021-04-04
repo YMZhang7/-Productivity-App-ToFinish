@@ -9,7 +9,8 @@ import '../custom_colour_scheme.dart';
 
 class AddNewTaskScreen extends StatefulWidget{
   final Task currentTask;
-  const AddNewTaskScreen({this.currentTask});
+  final BuildContext blocContext;
+  const AddNewTaskScreen({this.currentTask, @required this.blocContext});
   @override
   _AddNewTaskScreenState createState() => _AddNewTaskScreenState();
 }
@@ -21,8 +22,10 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
   String title = "New Task";
   String buttonLabel = "CREATE";
   TextEditingController _textEditingController = TextEditingController();
+  TextEditingController _tagController = TextEditingController();
   bool multipleTimers = false;
   List<Task> subtimers = [];
+  String oldTag = '';
 
   @override
   void initState() {
@@ -31,6 +34,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
       title = "Edit Task";
       buttonLabel = "UPDATE";
       timeRequired = widget.currentTask.time;
+      oldTag = widget.currentTask.tag;
     }
     super.initState();
   }
@@ -38,6 +42,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
   @override
   void dispose(){
     _textEditingController.dispose();
+    _tagController.dispose();
     super.dispose();
   }
 
@@ -95,6 +100,26 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                     ),
                     SizedBox(height: 30.0,),
                     Row(
+                      children: [
+                        Text('Tag: ', style: TextStyle(fontSize: 20.0),),
+                        SizedBox(width: 30.0,),
+                        Container(
+                          width: 150.0,
+                          height: 50.0,
+                          child: TextField(
+                            controller: _tagController,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              suffixIcon: IconButton(
+                                icon: Icon(Icons.clear_rounded), 
+                                onPressed: () => _textEditingController.clear(),
+                              )
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('Divide into multiple timers?', style: TextStyle(fontSize: 20.0)),
@@ -109,8 +134,10 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                       ],
                     ),
                     SizedBox(height: 20.0,),
-                    multipleTimers ? multiTimerWidget() : timeSpecificationWidget(),
-                    // Text('How long does it take?', style: TextStyle(fontSize: 20.0)),
+                    multipleTimers ? MultiTimerWidget(addNewTask: (task){
+                      subtimers.add(task);
+                      timeRequired += task.time;
+                    },) : timeSpecificationWidget(),
 
                   ],
                 ),
@@ -128,13 +155,19 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                       DateTime dt = new DateTime.now();
                       String t = dt.year.toString() + " " + dt.month.toString() + " " + dt.day.toString();
                       if (widget.currentTask == null){
-                        Task newTask = new Task(dateTime: t, description: description, time: timeRequired, timeElapsed: 0, isCompleted: false);
-                        BlocProvider.of<TodoBloc>(context).add(AddTask(task: newTask));
+                        Task newTask = new Task(dateTime: t, description: description, tag: _tagController.text, time: timeRequired, timeElapsed: 0, isCompleted: false, hasSubTimers: multipleTimers);
+                        BlocProvider.of<TodoBloc>(widget.blocContext).add(AddTask(task: newTask, subtasks: subtimers));
+                        BlocProvider.of<TagsBloc>(widget.blocContext).add(AddTag(tag: _tagController.text));
                         Navigator.pop(context);
                       } else {
                         widget.currentTask.description = description;
                         if (timeRequired > widget.currentTask.timeElapsed){
                           widget.currentTask.time = timeRequired;
+                          if (_tagController.text != oldTag){
+                            widget.currentTask.tag = _tagController.text;
+                            BlocProvider.of<TagsBloc>(context).add(DeleteTag(tag: oldTag));
+                            BlocProvider.of<TagsBloc>(context).add(AddTag(tag: _tagController.text));
+                          } 
                           BlocProvider.of<TodoBloc>(context).add(UpdateTask(task: widget.currentTask));
                           Navigator.pop(context);
                         } else {
@@ -159,7 +192,6 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                               );
                             }
                           );
-                            
                         }
                         
                       }
@@ -236,10 +268,169 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     );
   }
 
-  Widget multiTimerWidget(){
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-    );
+  // Widget multiTimerWidget(){
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Container(
+  //         color: Colors.red,
+  //         height: 20.0,
+  //       )
+  //     ],
+  //   );
+  // }
+
+}
+
+class MultiTimerWidget extends StatefulWidget {
+  final Function(Task) addNewTask;
+  const MultiTimerWidget({@required this.addNewTask});
+
+  @override
+  _MultiTimerWidgetState createState() => _MultiTimerWidgetState();
+}
+
+class _MultiTimerWidgetState extends State<MultiTimerWidget> {
+  List<Task> subTasks = [];
+  TextEditingController _textEditingController = TextEditingController();
+  int timeSpecified = 0;
+  
+  @override
+  void dispose() {
+    this._textEditingController.dispose();
+    super.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200.0,
+      child: Column(
+        children: [
+          subTasks.length > 0 ? Expanded(
+            child: ListView.builder(
+              itemCount: subTasks.length,
+              itemBuilder: (context, index) {
+                return Dismissible(
+                  key: Key(subTasks[index].description + index.toString()),
+                  background: Container(
+                    padding: EdgeInsets.all(20.0),
+                    color: Colors.red,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Icon(Icons.delete)
+                      ],
+                    ),
+                  ),
+                  child: Container(
+                    height: 70.0,
+                    padding: EdgeInsets.all(20.0),
+                    margin: EdgeInsets.only(bottom: 10.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      color: Theme.of(context).colorScheme.colour1,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(.5),
+                          blurRadius: 10.0,
+                          spreadRadius: 0.0,
+                          offset: Offset(
+                            5.0, // Move to right 10  horizontally
+                            5.0, // Move to bottom 10 Vertically
+                          ),
+                        )
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(subTasks[index].description, style: TextStyle(fontSize: 18.0),),
+                        Text(timeConverter(subTasks[index].time), style: TextStyle(fontSize: 18.0),),
+                      ],
+                    ),
+                  ),
+                  onDismissed: (direction) {
+                    print('delete subtimer');
+                    setState(() {
+                      subTasks.removeAt(index);
+                    });
+                    for (Task sub in subTasks){
+                      print(sub.description);
+                    }
+                  },
+                );
+              },
+            ),
+          ) : Container(
+            child: Center(
+              child: Text('No sub-timer added yet.'),
+            ),
+          ),
+          TextButton(
+            onPressed: (){
+              print('add new task');
+              showDialog(
+                context: context, 
+                builder: (BuildContext context){
+                  return Container(
+                    height: 100.0,
+                    child: AlertDialog(
+                      title: Text('New sub-timer'),
+                      content: SingleChildScrollView(
+                        child: ListBody(
+                          children: [
+                            Text('Description'),
+                            TextField(
+                              controller: _textEditingController,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                helperText: '* Required',
+                                suffixIcon: IconButton(
+                                  icon: Icon(Icons.clear_rounded), 
+                                  onPressed: () => _textEditingController.clear(),
+                                )
+                              ),
+                            ),
+                            Text('How long does it take?'),
+                            TimePicker(onTimeSelectedChange: (time){
+                              timeSpecified = time;
+                            }),
+                          ],
+                        ),
+                      ),
+                      actions: [
+                        TextButton(onPressed: (){
+                          timeSpecified = 0;
+                          Navigator.of(context).pop();
+                        }, child: Text('Cancel')),
+                        TextButton(
+                          onPressed: (){
+                            if (_textEditingController.text.length != 0){
+                              DateTime dt = new DateTime.now();
+                              String t = dt.year.toString() + " " + dt.month.toString() + " " + dt.day.toString();
+                              Task newTask = new Task(dateTime: t, description: _textEditingController.text, tag: '', time: timeSpecified, timeElapsed: 0, isCompleted: false, hasSubTimers: false);
+                              setState(() {
+                                subTasks.add(newTask);
+                              });
+                              widget.addNewTask(newTask);
+                              timeSpecified = 0;
+                              _textEditingController.clear();
+                              Navigator.of(context).pop();
+                            }
+                          }, 
+                          child: Text('OK')
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              );
+            }, 
+            child: Text('Add')
+          )
+        ],
+      ),
+    );
+  }
 }

@@ -9,7 +9,8 @@ import 'task_box.dart';
 class TasksMatrix extends StatelessWidget {
   final List<Task> tasks;
   final bool showCompleted;
-  const TasksMatrix({@required this.tasks, @required this.showCompleted});
+  final String tag;
+  const TasksMatrix({@required this.tasks, @required this.showCompleted, @required this.tag});
 
   @override
   Widget build(BuildContext context) {
@@ -26,15 +27,17 @@ class TasksMatrix extends StatelessWidget {
   List<Widget> getMatrix(List<Task> tasks){
     List<Widget> matrix = [];
     for (int i = 0; i < tasks.length; i++){
-      if (showCompleted){
-        matrix.add(
-          AnimationBox(child: TaskBox(task: tasks[i]), total: tasks.length), 
-        );
-      } else {
-        if (!tasks[i].isCompleted){
+      if (tag == 'all' || tasks[i].tag == tag){
+        if (showCompleted){
           matrix.add(
             AnimationBox(child: TaskBox(task: tasks[i]), total: tasks.length), 
           );
+        } else {
+          if (!tasks[i].isCompleted){
+            matrix.add(
+              AnimationBox(child: TaskBox(task: tasks[i]), total: tasks.length), 
+            );
+          }
         }
       }
     }

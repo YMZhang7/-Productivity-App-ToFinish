@@ -1,5 +1,5 @@
 import 'package:ToFinish/components/tasks_matrix.dart';
-import 'package:ToFinish/models/Timer.dart';
+import 'package:ToFinish/models/Ticker.dart';
 import 'package:ToFinish/screens/add_new_task_screen.dart';
 // import 'package:ToFinish/screens/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -42,52 +42,16 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider(
             create: (context) => TodoBloc(),
-          )
+          ),
+          BlocProvider(
+            create: (context) => TagsBloc(),
+          ),
+          // BlocProvider(
+          //   create: (context) => SubtimersBloc(),
+          // ),
         ], 
         child: HomeScreen(),
       ),
-    );
-  }
-}
-
-
-
-class App extends StatefulWidget {
-  @override
-  _AppState createState() => _AppState();
-}
-
-class _AppState extends State<App> {
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<ScreensBloc, ScreensState>(
-      builder: (context, state){
-        if (state is InTimersListScreen){
-          return HomeScreen();
-        } else if (state is InTimersMatrixScreen){
-          return TimersMatrixScreen();
-        } else if (state is InTLTimerScreen){
-          return BlocProvider(
-            create: (context) => TimerBloc(ticker: Timer(), task: state.task),
-            child: TimersScreen(task: state.task),
-          );
-        } else if (state is InLTimerScreen){
-          return BlocProvider(
-            create: (context) => TimerBloc(ticker: Timer(), task: state.task),
-            child: TimersScreen(task: state.task),
-          );
-        } else if (state is InListScreen){
-          return ListScreen();
-        } else if (state is InTLAddNewTaskScreen || state is InLAddNewTaskScreen || state is InTMAddNewTaskScreen){
-          return AddNewTaskScreen();
-        } else if (state is InTLEditNewTaskScreen){
-          return AddNewTaskScreen(currentTask: state.task,);
-        } else if (state is InLEditNewTaskScreen){
-          return AddNewTaskScreen(currentTask: state.task,);
-        } else {
-          return Container(height: 0.0,width: 0.0,);
-        }
-      },
     );
   }
 }

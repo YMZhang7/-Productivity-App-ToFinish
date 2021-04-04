@@ -35,10 +35,14 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     if (state is TasksLoadSuccess){
       try {
         await dbHelper.updateTodo(event.task);
+        // if (event.oldTag != ''){
+        //   await dbHelper.updateTag(event.oldTag, event.task.tag);
+        // }
         List<Task> tasks = await dbHelper.getTodos();
         yield TasksLoadInProgress();
         yield TasksLoadSuccess(tasks);
       } catch (_){
+        print('Error in _mapUpdateTaskToState');
         print(_);
         yield TasksLoadFailure();
       }
@@ -52,6 +56,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       yield TasksLoadInProgress();
       yield TasksLoadSuccess(tasks);
     } catch (_){
+      print('Error in mapLoadTasksToState: ');
       print(_);
       yield TasksLoadFailure();
     }
@@ -60,11 +65,15 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   Stream<TodoState> _mapAddTaskToState(AddTask event) async*{
     if (state is TasksLoadSuccess){
       try {
-        await dbHelper.addTodo(event.task);
-        List<Task> tasks = List.from((state as TasksLoadSuccess).tasks)..add(event.task);
+        Task newTask = await dbHelper.addTodo(event.task);
+        if (event.subtasks.length > 0){
+          await dbHelper.addSubTimers(newTask.id.toString(), event.subtasks);
+        }
+        List<Task> tasks = List.from((state as TasksLoadSuccess).tasks)..add(newTask);
         yield TasksLoadInProgress();
         yield TasksLoadSuccess(tasks);
       } catch (_){
+        print('Error in mapAddTaskToState');
         print(_);
         yield TasksLoadFailure();
       }
@@ -75,13 +84,31 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     if (state is TasksLoadSuccess){
       try {
         await dbHelper.deleteTodo(event.task.id);
+        // await dbHelper.deleteTag(event.task.tag);
         List<Task> tasks = List.from((state as TasksLoadSuccess).tasks)..remove(event.task);
         yield TasksLoadInProgress();
         yield TasksLoadSuccess(tasks);
       } catch (_){
+        print('Error in _mapDeleteTaskToState: ');
         print(_);
         yield TasksLoadFailure();
       }
     }
   }
+
+
+  // Stream<TodoState> _mapCreateSubTasksToState(CreateSubTasks event) async*{
+  //   if (state is TasksLoadSuccess){
+  //     try {
+  //       List<Task> subtimers = await dbHelper.addSubTimers(event.tableName, event.subtimers);
+  //       List<Task> tasks = List.from((state as TasksLoadSuccess).tasks)..addAll(subtimers);
+  //       yield TasksLoadInProgress();
+  //       yield TasksLoadSuccess(tasks);
+  //     } catch (_){
+  //       print('Error in _mapCreateSubTasksToState: ');
+  //       print(_);
+  //       yield TasksLoadFailure();
+  //     }
+  //   }
+  // }
 }

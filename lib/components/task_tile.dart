@@ -18,24 +18,26 @@ class _TaskTileState extends State<TaskTile> {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: Key(widget.task.id.toString()),
+      key: Key(widget.task.description + widget.task.id.toString()),
       confirmDismiss: (direction) async{
         if (direction == DismissDirection.startToEnd){
-          Navigator.push(
-            context, 
-            MaterialPageRoute(
-              builder: (contextHomescreen){
-                return BlocProvider.value(
-                  value: context.bloc<TodoBloc>(),
-                  child: AddNewTaskScreen(currentTask: widget.task,),
-                );
-              }
-            )
-          );
+          Navigator.push(context, MaterialPageRoute(builder: (_) => AddNewTaskScreen(blocContext: context, currentTask: widget.task,)));
+          // Navigator.push(
+          //   context, 
+          //   MaterialPageRoute(
+          //     builder: (contextHomescreen){
+          //       return BlocProvider.value(
+          //         value: context.bloc<TodoBloc>(),
+          //         child: AddNewTaskScreen(currentTask: widget.task,),
+          //       );
+          //     }
+          //   )
+          // );
           return false;
         } else {
           widget.toDelete(widget.task.id);
           BlocProvider.of<TodoBloc>(context).add(DeleteTask(widget.task));
+          BlocProvider.of<TagsBloc>(context).add(DeleteTag(tag: widget.task.tag));
           return true;
         }
       },

@@ -9,3 +9,11 @@ export 'timer/timer_state.dart';
 export 'todo/todo_bloc.dart';
 export 'todo/todo_event.dart';
 export 'todo/todo_state.dart';
+
+export 'tags/tags_bloc.dart';
+export 'tags/tags_event.dart';
+export 'tags/tags_state.dart';
+
+export 'subtimers/subtimers_bloc.dart';
+export 'subtimers/subtimers_event.dart';
+export 'subtimers/subtimers_state.dart';

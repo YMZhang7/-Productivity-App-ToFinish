@@ -1,6 +1,6 @@
 import 'package:ToFinish/blocs/blocs.dart';
 import 'package:ToFinish/models/Task.dart';
-import 'package:ToFinish/models/Timer.dart';
+import 'package:ToFinish/models/Ticker.dart';
 import 'package:ToFinish/screens/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,18 +13,21 @@ class TaskBox extends StatelessWidget{
   const TaskBox({@required this.task});
   @override
   Widget build(BuildContext context) {
+    print(task.hasSubTimers);
     return GestureDetector(
       onTap: (){
         Navigator.push(
           context, 
-          MaterialPageRoute(builder: (taskboxContext) => 
-            BlocProvider.value(
-              value: context.bloc<TodoBloc>(),
-              child: BlocProvider(
-                create: (context) => TimerBloc(ticker: Timer(), task: task),
-                child: TimersScreen(task: task)),
-              ),
+          MaterialPageRoute(builder: (_) => 
+            task.hasSubTimers ? BlocProvider(
+              create: (context) => SubtimersBloc(),
+              child: MultiTimersScreen(blocContext: context, task: task),
             )
+            : BlocProvider(
+              create: (context) => TimerBloc(ticker: Ticker(), task: task),
+              child: TimersScreen(todoBlocContext: context, task: task),
+            )
+          )
         );
       },
       child: Container(
@@ -55,7 +58,21 @@ class TaskBox extends StatelessWidget{
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Center(child: Text(task.description, style: TextStyle(fontSize: 15.0), overflow: TextOverflow.ellipsis,),),
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Icon(task.hasSubTimers ? (Icons.view_carousel_rounded) : (Icons.timer)),
+                              Flexible(
+                                child: Container(
+                                  child: Text(
+                                    task.description, 
+                                    style: TextStyle(fontSize: 15.0), overflow: TextOverflow.ellipsis,
+                                  )
+                                )
+                              ),
+                            ],
+                          ),),
                       ],
                     ),
                   ),

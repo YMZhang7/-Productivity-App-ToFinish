@@ -4,16 +4,16 @@ import 'package:ToFinish/models/Task.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import '../blocs.dart';
-import '../../models/Timer.dart';
+import '../../models/Ticker.dart';
 
 class TimerBloc extends Bloc<TimerEvent, TimerState> {
-  final Timer _ticker;
+  final Ticker _ticker;
   Task task;
   int _duration;
 
   StreamSubscription<int> _tickerSubscription;
 
-  TimerBloc({@required Timer ticker, @required Task task})
+  TimerBloc({@required Ticker ticker, @required Task task})
       : assert(ticker != null),
         _ticker = ticker,
         task = task,

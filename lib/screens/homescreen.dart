@@ -1,4 +1,5 @@
 import 'package:ToFinish/blocs/blocs.dart';
+import 'package:ToFinish/components/tags_list.dart';
 import 'package:ToFinish/components/timers_representation_body.dart';
 import 'package:ToFinish/screens/add_new_task_screen.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool showList = false;
   bool showCompleted = false;
+  String selectedTag = 'all';
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.all(30.0),
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        // color: Colors.red,
         child: Column(
           children: [
             SafeArea(
@@ -33,24 +34,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 ]
               )
             ),
-            Container(
-              height: 30.0,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  Label(text: 'Study',),
-                  Label(text: 'Study',),
-                  Label(text: 'Study',),
-                  Label(text: 'Study',),
-                  Label(text: 'Study',),
-                ],
-              ),
+            TagsList(
+              selected: selectedTag,
+              changeSelected: (selected){
+                setState(() {
+                  selectedTag = selected;
+                });
+              },
             ),
             Expanded(
               child: Container(
                 margin: EdgeInsets.only(top: 20.0),
                 // color: Colors.red,
-                child: TimersRepresentationBody(showList: showList, showCompleted: showCompleted)
+                child: TimersRepresentationBody(showList: showList, showCompleted: showCompleted, tag: selectedTag,)
               ),
             ),
             Container(
@@ -70,11 +66,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.push(
                         context, 
                         MaterialPageRoute(
-                          builder: (contextHomescreen){
-                            return BlocProvider.value(
-                              value: context.bloc<TodoBloc>(),
-                              child: AddNewTaskScreen(),
-                            );
+                          builder: (_){
+                            // return BlocProvider.value(
+                            //   value: context.bloc<TodoBloc>(),
+                            //   child: BlocProvider.value(
+                            //     value: context.bloc<TagsBloc>(),
+                            //     child: AddNewTaskScreen(),
+                            //   ),
+                            // );
+                            return AddNewTaskScreen(blocContext: context,);
                           }
                         )
                       );
@@ -115,21 +115,3 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class Label extends StatelessWidget {
-  final String text;
-  const Label({@required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 80.0,
-      height: 30.0,
-      margin: EdgeInsets.only(right: 10.0),
-      child: Center(child: Text(this.text)),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-        color: Theme.of(context).colorScheme.colour3,
-      ),
-    );
-  }
-}
